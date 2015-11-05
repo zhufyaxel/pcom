@@ -4,7 +4,11 @@
 
 import processing.sound.*;
 
-SinOsc osc;
+class note {
+  
+}
+
+SqrOsc osc;
 
 Env envelope;
 
@@ -19,13 +23,13 @@ int[] scale = {
 int note = 0;
 void setup() {
   size(200, 200);
-  osc = new SinOsc(this);
+  osc = new SqrOsc(this);
   envelope = new Env(this);
 }
 
 void draw() {
   background(255);
-  PVector v = new PVector();
+  PVector v = new PVector(); 
   
   //if (frameCount % 60 == 0) {
   //  osc.play(translateMIDI(scale[note]), 1);
@@ -45,23 +49,3 @@ void keyPressed() {
     envelope.play(osc, 0.001, 0.004, 0.3, 0.4);
     note = (note + 1) % scale.length;  
 }
-
-
-
-//void keyPressed() {
-//  int keyIndex = -1;
-//  if (key >= 'A' && key <= 'Z') {
-//    keyIndex = key - 'A';
-//  } else if (key >= 'a' && key <= 'z') {
-//    keyIndex = key - 'a';
-//  }
-//  if (keyIndex == -1) {
-//    // If it's not a letter key, clear the screen
-//    background(0);
-//  } else { 
-//    // It's a letter key, fill a rectangle
-//    fill(millis() % 255);
-//    float x = map(keyIndex, 0, 25, 0, width - rectWidth);
-//    rect(x, 0, rectWidth, height);
-//  }
-//}

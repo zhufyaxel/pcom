@@ -1,0 +1,4 @@
+These are the musical part of the first version of this game.
+
+Wave the sword will create random sword slashing sound.
+Wave the wand will create one tone at a time, and the tones form a musical piece.

@@ -1,0 +1,5 @@
+These are the testing files for beat judge.
+
+test folder holds the files no longer in use but ok for referencing.
+
+release folder holds the tested files ok for use.

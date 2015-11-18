@@ -6,7 +6,7 @@ BeatGame mygame;
 
 void setup() {
   size(600,600);
-  int bpm = 90;
+  int bpm = 100;
   mygame = new BeatGame(bpm);
 }
 

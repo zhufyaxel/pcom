@@ -14,6 +14,8 @@ void setup() {
 
 void draw() {
   background(0);
+  stroke(255);  
+  line(0,590,600,590);
   mygame.step();
 }
 

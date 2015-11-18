@@ -12,27 +12,32 @@ public class NoteJudge {
     isGone = false;
     }
 
-  void life() {
+  boolean life() {
     int currentTime = millis();
+    boolean missed = false;
     // a short period after timeJudge, auto miss the note if not hit, and destruct the note
     if (currentTime > tJudge + interval/2) {
       if (!isHit) {
         isHit = true;
         println("miss");
+        missed = true;
       }
       isGone = true;
-    } 
+    }
+    return missed;
   }
   
-  void judge(int time) {
+  boolean judge(int time) {
     int tKey = time;
     int difference = abs(tKey - tJudge);
+    boolean goodhit = false;
     // only judge half the interval around the tJudge
     if (!isHit) {
       if (difference <= interval/2) {
         // only judge +- 20% of interval so it should be easy
         if (difference <= interval/5) {
           println("good");
+          goodhit = true;
           isHit = true;
           //isGone = true;
         }
@@ -45,6 +50,7 @@ public class NoteJudge {
     } else {  //hit twice
       println("miss");
     }
+    return (goodhit);
   }
   
 }

@@ -57,7 +57,6 @@ public class Creature {
   }
 
   void display() {
-    
     pos.set(ball.getX(), ball.getY());
     if (blood < 0)
       blood = 0;

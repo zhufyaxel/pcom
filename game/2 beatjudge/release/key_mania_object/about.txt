@@ -1,0 +1,4 @@
+Mania模式
+听节奏结合visual来follow音符
+
+补充了启动时的latency所以解决了判定不佳的问题

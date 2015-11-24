@@ -26,12 +26,12 @@ public class ManiaGame {
      song = new SoundFile(key_mania_object.this, "twinkle star.mp3");  // this this!!!! parent...
      
      //initializing time
-     int currentTime = millis();
+     int latency = millis();
      song.play();
      
      //add new notes and make for delay
      for (int i = 0; i < noteTimes.length; i++) {
-       notes.add(new Note(noteTimes[i] * interval + currentTime, speed));
+       notes.add(new Note(noteTimes[i] * interval + latency, speed));
      } 
   }
   

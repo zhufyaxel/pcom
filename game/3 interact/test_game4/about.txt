@@ -1,0 +1,7 @@
+a - attack
+s - staff
+d - defend
+
+asd = attack
+
+everytime when there is a blink, try to do asd the next beat after blink.

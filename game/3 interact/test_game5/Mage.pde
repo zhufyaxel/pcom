@@ -7,7 +7,7 @@ public class Mage extends Player {
     mage[1] = loadImage("images/characters/wangshu1.png");
     mage[2] = loadImage("images/characters/wangshu2.png");
   }
-  
+
   void display(int beatNum) {
     display(mage, beatNum);
   }

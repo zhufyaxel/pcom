@@ -55,5 +55,4 @@ public class Visual {
       image(imgGrass[1], width/2, height/2);
     }
   }
-
 }

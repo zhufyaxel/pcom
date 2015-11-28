@@ -7,7 +7,7 @@ public class Monster extends Creature {
     monster[1] = loadImage("images/characters/mon1.png");
     monster[2] = loadImage("images/characters/mon2.png");
   }
-  
+
   void display(int beatNum) {
     display(monster, beatNum);
   }

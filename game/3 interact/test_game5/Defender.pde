@@ -7,7 +7,7 @@ public class Defender extends Player {
     defender[1] = loadImage("images/characters/yue1.png");
     defender[2] = loadImage("images/characters/yue2.png");
   }
-  
+
   void display(int beatNum) {
     display(defender, beatNum);
   }

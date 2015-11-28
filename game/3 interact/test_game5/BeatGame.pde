@@ -5,6 +5,7 @@ public class BeatGame {
   int plusLatency = 0;  // use mouse wheel to adjust latency
 
   int interval;
+  int one_third;
   int two_third;
   int phase;
   int beatNum;  // doom = 0; cha = 1; cha = 2;
@@ -31,6 +32,7 @@ public class BeatGame {
 
     bpm = 150;    // 180 with funny_mono
     interval = round(60000.0/bpm); // milliseconds, 60 * 1000 / bpm 
+    one_third = interval *1/3;
     two_third = interval *2/3;
     phase = 0;
     beatNum = 0;
@@ -39,24 +41,18 @@ public class BeatGame {
     visual = new Visual();
     music = new SoundFile(test_game5.this, "music/funny_slow_mono.mp3");
 
-    yue = new Defender(469-100, 564, 165*0.7, 244*0.7, 3);
-    zhu = new Warrior(301-50, 564, 171*0.7, 244*0.7, 3);
-    wangshu = new Mage(137, 564, 198*0.7, 244*0.7, 3);
+    yue = new Defender(469, 564, 165, 244, 3);
+    zhu = new Warrior(301, 564, 171, 244, 3);
+    wangshu = new Mage(137, 564, 198, 244, 3);
 
-    mon = new Monster(765, 490, 425*0.7, 394*0.7, 10);
+    mon = new Monster(765, 490, 425, 394, 10);
 
     music.loop();
 
     latency = millis() + 300;
   }
 
-  // append latency when needed
-  void adjustLatency (int e) {
-    plusLatency += e;
-    latency += e;
-    println(plusLatency);
-  }
-
+  // main steps in draw()
   void execute() {
     background(0);
     beatCycle();
@@ -77,10 +73,46 @@ public class BeatGame {
         beatIn = false;
       }
     } else {
-      if (phase < two_third) {
+      if (phase < one_third) {
         beatIn = true;
         beatNum += 1;
+        println(";");
       }
     }
+  }
+
+  // keyEvent, a - attack, s = staff, d - shield
+  // Up - increase latency; Down - decrease latency
+  void keyEvent() {
+    if (key != CODED) {
+      if (phase <= one_third || phase >= two_third) {
+        if (key == 'a' || key == 'A') {
+          background(255, 0, 0);
+          print("A");
+        }
+        if (key == 's' || key == 'S') {
+          background(0, 255, 0);
+          print("S");
+        }
+        if (key == 'd' || key == 'D') {
+          background(0, 0, 255);
+          print("D");
+        }
+      }
+    }
+    else {  // if key == coded
+      if (keyCode == UP) {
+        game.adjustLatency(10);
+      } else if (keyCode == DOWN) {
+        game.adjustLatency(-10);
+      }
+    }
+  }
+  
+  // append latency when needed with arrows Up & Down
+  void adjustLatency (int e) {
+    plusLatency += e;
+    latency += e;
+    println("Additional Latency: ", plusLatency);
   }
 }

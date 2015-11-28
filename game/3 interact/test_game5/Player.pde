@@ -1,19 +1,19 @@
 public class Creature {
   // do something!
   // what should a creature apprear like?
-  
+
   // they should have blood and max blood
   boolean alive;
   int blood;
   int maxBlood;
   PImage[] heart;
-  
+
   // they should have existence and be able to move
   float x;
   float y;
   float w;  //width
   float h;  //height
-  
+
   String state;
   String displaystate;
   String type;
@@ -29,13 +29,13 @@ public class Creature {
     heart[0] = loadImage("data/images/heart/heart_hollow.png");
     heart[1] = loadImage("data/images/heart/heart_half.png");
     heart[2] = loadImage("data/images/heart/heart_full.png");
-    
+
     x = _x;
     y = _y;
     w = _w;
     h = _h;
   }
-  
+
   void display(PImage[] character, int beatNum) {
     if (beatNum % 3 == 0) {
       image(character[0], x, y, w, h);
@@ -44,12 +44,12 @@ public class Creature {
     } else {
       image(character[2], x, y, w, h);
     }
-    
+
     displayBlood();
   }
-  
+
   void displayBlood() {
-    int size = 30;
+    int size = 35;
     float currentX = x - float(maxBlood)/2 * size + size/2;
     float currentY = y - h/2 - size/2;
     for (int i = 0; i < maxBlood; i++) {

@@ -16,9 +16,9 @@ void draw() {
 }
 
 void keyPressed() {
-  game.keyEvent();
+  game.myKeyPressed();
 }
 
 void keyReleased() {
-
+  game.myKeyReleased();
 }

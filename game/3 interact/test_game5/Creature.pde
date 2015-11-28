@@ -1,5 +1,7 @@
+// Creature > Player > Warrior, Mage and Defender
+// Creature > Monster
+
 public class Creature {
-  // do something!
   // what should a creature apprear like?
 
   // they should have blood and max blood
@@ -13,10 +15,16 @@ public class Creature {
   float y;
   float w;  //width
   float h;  //height
+  
+  // movement related
+  float y0;
+  float v0;
+  float vy;
+  float acc;
 
-  String state;
-  String displaystate;
-  String type;
+  //String state;
+  //String displaystate;
+  //String type;
 
   Creature(float _x, float _y, float _w, float _h, int _b) {
     alive = true;
@@ -34,8 +42,13 @@ public class Creature {
     y = _y;
     w = _w;
     h = _h;
+    
+    y0 = y;
+    v0 = -20;
+    vy = 0;
+    acc = 2;
   }
-
+  
   void display(PImage[] character, int beatNum) {
     if (beatNum % 3 == 0) {
       image(character[0], x, y, w, h);
@@ -71,10 +84,28 @@ public class Creature {
       currentX += size;
     }
   }
-}
-
-public class Player extends Creature {
-  Player(float x, float y, float w, float h, int b) {
-    super(x, y, w, h, b);
+  
+  // move with gravity
+  void move() {
+    // with initial velocity or on the air it will move
+    if (y < y0 || vy != 0) {        
+      y = y + vy;
+      vy = vy + acc;
+    }
+    // hit the ground and immediately stop
+    if (y >= y0 && vy != 0) {  // y >= y0
+      y = y0;
+      vy = 0;
+    }
+  }
+  
+  // add initial velocity to jump
+  void jump() {
+    // jump on ground then add some big vel, jump in the air then add small vel
+    if (y == y0) {
+      vy = vy + v0;
+    } else if (y < y0) {
+      vy = vy + v0 * 0.5;
+    }
   }
 }

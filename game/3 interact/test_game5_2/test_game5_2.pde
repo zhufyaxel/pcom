@@ -1,5 +1,7 @@
 // 5_2, sequence input: a->s->d with game pad
 // serial finished
+// either keyboard asd or physical input
+// use Up and Down arrows to adjust user latency
 
 import processing.sound.*;
 import processing.serial.*;

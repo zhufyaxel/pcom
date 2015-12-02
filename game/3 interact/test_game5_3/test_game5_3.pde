@@ -1,5 +1,5 @@
-// 5_2, sequence input: a->s->d with game pad
-// serial finished
+// 5_3, sequence input: a->s->d with game pad
+// serial finished, added attack effect
 // either keyboard asd or physical input
 // use Up and Down arrows to adjust user latency
 // use Right and Left arrows to adjust system latency

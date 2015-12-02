@@ -159,7 +159,7 @@ public class BeatGame {
     // 24 beats after start, begin to hit players
     // make decision at beatNum 2, show intension at beat 345, charging at next beat 012, attack at next beat 345.
     // attack and anything 
-    if (beatNum > 24 && mon.get(0).alive) {    //beatNum > 24 && mon.get(0).alive
+    if (mon.get(0).alive) {    //beatNum > 24 && mon.get(0).alive
       if (n == 2) {
         if (monsOrder == "stay" && mon.get(0).state == "stay") {
           int mood = int(random(0, 2));

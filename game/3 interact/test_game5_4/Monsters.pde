@@ -80,6 +80,7 @@ public class Monster extends Creature {
   }
   
   void displayPrep(int beatNum) {
+    tint(128,0,0);
     if (beatNum % 6 == 3) {
       image(monsterPrep[0], x, y, w, h);
       displayBlood();
@@ -90,9 +91,11 @@ public class Monster extends Creature {
       image(monsterPrep[2], x, y, w, h);
       displayBlood();
     }
+    noTint();
   }
   
   void displayCharge(int beatNum) {
+    tint(255,0,0);
     if (beatNum % 6 == 0) {
       image(monsterCharge[0], x, y, w, h);
       displayBlood();
@@ -103,13 +106,16 @@ public class Monster extends Creature {
       image(monsterCharge[2], x, y, w, h);
       displayBlood();
     }
+    noTint();
   }
   
   void displayAtt(int beatNum) {
+    tint(255,0,0);
     if (beatNum % 6 == 3) {
       image(monsterAtt, x, y, w, h);
       displayBlood();
     }
+    noTint();
   }
 
   void displayBlood() {

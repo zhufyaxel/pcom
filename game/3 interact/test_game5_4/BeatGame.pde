@@ -25,6 +25,10 @@ public class BeatGame {
   Visual visual;
   SoundFile music;
   SoundFile sword;
+  
+  SoundFile dol;
+  SoundFile me;
+  SoundFile sol;
   //SoundFile shield;
   //SoundFile wand;
 
@@ -62,6 +66,12 @@ public class BeatGame {
     visual = new Visual();
     music = new SoundFile(test_game5_4.this, "music/funny_slow_drum_mono.mp3");
     sword = new SoundFile(test_game5_4.this, "music/sword_strike.mp3");
+    dol = new SoundFile(test_game5_4.this, "music/dol.mp3");
+    me = new SoundFile(test_game5_4.this, "music/me.mp3");
+    sol = new SoundFile(test_game5_4.this, "music/sol.mp3");
+    dol.amp(0.2);
+    me.amp(0.2);
+    sol.amp(0.2);
     
     // characters and monsters
     yue = new Defender(466, 489, 241, 388, 3);
@@ -238,6 +248,7 @@ public class BeatGame {
     int n = beatNum % 6;
     if (n < 3) {    // beatNum % 6 < 3 || beatNum == 5, because some may hit before the first beat
       if (key=='a' || key == 'A') {
+        dol.play();
         wangshu.jump(onBeat);
         if (orders[n] == "Null") {
           orders[n] = "Heal";
@@ -249,6 +260,7 @@ public class BeatGame {
         }
       }
       if (key=='s' || key == 'S') {
+        sol.play();
         zhu.jump(onBeat);
         if (orders[n] == "Null") {
           orders[n] = "Attack";
@@ -260,6 +272,7 @@ public class BeatGame {
         }
       }
       if (key=='d' || key == 'D') {
+        me.play();
         yue.jump(onBeat);
         if (orders[n] == "Null") {
           orders[n] = "Defend";

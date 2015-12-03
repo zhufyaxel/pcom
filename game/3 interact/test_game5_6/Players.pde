@@ -166,7 +166,7 @@ public class Mage extends Player {
       heal[i] = loadImage("images/characters/wangshu/wa/wa" + (i+1) + ".png");
     }
 
-    adjustX =  - 25;    // adjust displayBlood position
+    adjustX =  - 15;    // adjust displayBlood position
   }
 
   void displayHeal() {
@@ -201,7 +201,7 @@ public class Mage extends Player {
 
 public class Defender extends Player {
   Defender(int interval, float x, float y, float w, float h, int b) {
-    super(interval, x, y, w, h, b);
+    super(interval, x + 15, y, w, h, b);
 
     stay = new PImage[3];
     stay[0] = loadImage("images/characters/zhangyue/z/z2.png");
@@ -213,7 +213,7 @@ public class Defender extends Player {
       defend[i] = loadImage("images/characters/zhangyue/za/za" + (i+1) + ".png");
     }
 
-    adjustX =  - 40;    // adjust displayBlood position
+    adjustX =  - 35;    // adjust displayBlood position
   }
 
   void displayDefend() {
@@ -227,15 +227,12 @@ public class Defender extends Player {
       }
     }
     if (beatNum % 6 == 4) {
-      image(defend[1], x, y, w, h);
+        image(defend[1], x, y, w, h);
     }
     if (beatNum % 6 == 5) {
-      //image(defend[2], x, y, w, h);
-      if (phase <= interval * 1/4) {
+      if (phase <= interval * 1/6) {
         image(defend[0], x, y, w, h);
-      } else if (phase <= interval * 2/4) {
-        image(defend[4], x, y, w, h);
-      } else if (phase <= interval * 3/4) {
+      } else if (phase <= interval * 2/6) {
         image(defend[3], x, y, w, h);
       } else {
         image(stay[2], x, y, w, h);

@@ -181,9 +181,9 @@ public class BeatGame {
           break;
         }
         if (orders[0] == "Attack") {
-          yue = new Defender(interval, 466, 489, 241, 388, 3);
-          zhu = new Warrior(interval, 285, 489, 226, 388, 3);
-          wangshu = new Mage(interval, 139, 489, 225, 388, 3);
+          yue = new Defender(interval, 466, 489, 241, 388, 4);
+          zhu = new Warrior(interval, 285, 489, 226, 388, 4);
+          wangshu = new Mage(interval, 139, 489, 225, 388, 4);
           
           stage = "fight";
           break;

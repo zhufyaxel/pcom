@@ -9,11 +9,11 @@ public class BeatGame {
   // stage 3: "defeated" player dead -> fight again: back to stage 2
   //                             -> practice again: back to stage 1
 
- 
+
   int score;
   int beatFight;
   int beatsSurvive;
-  
+
   PImage tryagain = loadImage("images/background/try_again.png");
 
   // music characteristics
@@ -34,7 +34,7 @@ public class BeatGame {
   // monster's orders
   String monsOrder;
   int beatClear;    // time when clear up the monster
-  int monsInterval;  // gap between a new monster respawn
+  int monsInterval1, monsInterval2;  // gap between a new monster respawn
 
   // visual and sound
   Visual visual;
@@ -78,7 +78,8 @@ public class BeatGame {
 
     // monster's order
     monsOrder = "stay";    // stay, attack
-    monsInterval = 14;
+    monsInterval1 = 8;     // practice mode
+    monsInterval2 = 14;    // fight mode
 
     // visual and music
     visual = new Visual();
@@ -117,6 +118,7 @@ public class BeatGame {
     case "practice":
       if (key == 'f' || key == 'F' ) {
         stage = "fight";
+        score = 0;
         beatFight = beatNum;
         break;
       }
@@ -126,6 +128,7 @@ public class BeatGame {
 
         if (!mon.get(0).isAlive()) {
           // ********** score here somehow ************//
+          score ++;
           mon.remove(0);
           beatClear = beatNum;
         }
@@ -133,7 +136,7 @@ public class BeatGame {
       // respawn the monster
       // try to avoid respawn on beat
       if (mon.size() == 0) {
-        if ((beatNum - beatClear) == monsInterval) {
+        if ((beatNum - beatClear) == monsInterval1) {
           mon.add(new Monster(interval, 760, 450, 436, 465, 12));
         }
       }
@@ -141,6 +144,10 @@ public class BeatGame {
       wangshu.lifeCycle(beatNum, phase);
       zhu.lifeCycle(beatNum, phase);
       yue.lifeCycle(beatNum, phase);
+      
+      textSize(28);
+      fill(0);
+      text("Killed: " + score, 680, 720);
 
       break;
 
@@ -163,7 +170,7 @@ public class BeatGame {
       // respawn the monster
       // try to avoid respawn on beat
       if (mon.size() == 0) {
-        if ((beatNum - beatClear) == monsInterval) {
+        if ((beatNum - beatClear) == monsInterval2) {
           mon.add(new Monster(interval, 760, 450, 436, 465, 12));
         }
       }
@@ -171,13 +178,13 @@ public class BeatGame {
       wangshu.lifeCycle(beatNum, phase);
       zhu.lifeCycle(beatNum, phase);
       yue.lifeCycle(beatNum, phase);
-      
+
       textSize(28);
       fill(0);
-      
+
       beatsSurvive = beatNum - beatFight;
       text("Beats survived: "+ beatsSurvive, 180, 720);
-     
+
       text("Killed: " + score, 680, 720);
 
       break;
@@ -204,7 +211,7 @@ public class BeatGame {
         yue = new Defender(interval, 466, 489, 241, 388, 4);
         zhu = new Warrior(interval, 285, 489, 226, 388, 4);
         wangshu = new Mage(interval, 139, 489, 225, 388, 4);
-        
+
         score = 0;
         beatFight = beatNum;
 
@@ -348,12 +355,13 @@ public class BeatGame {
     image(tryagain, width/2, height/2);
   }
 
-  // custom keyPressed event
-  // a - mage, s - warrior, d - defendor
-  // Up - increase latency; Down - decrease latency
+
+
+
   void myKeyPressed() {
-    if (key != CODED) {  // ASD controls characters
+    if (key != CODED) {  // ASD controls keys, alphabetical etc
       inputValues();
+      takeDamage();
     } 
     // if key == coded, UP and DOWN adjust additional latency
     else {
@@ -426,6 +434,16 @@ public class BeatGame {
           }
         }
       }
+    }
+  }
+
+  // for practice purpose, slowly kill yourself
+  void takeDamage() {
+    println("Hey!!");
+    if (key == 'k' || key == 'K') {
+      zhu.changeBlood(-2);
+      wangshu.changeBlood(-2);
+      yue.changeBlood(-2);
     }
   }
 

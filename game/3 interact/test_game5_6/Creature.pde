@@ -183,4 +183,9 @@ public class Creature {
     state = _state;
   }
   
+  void changeBlood(int num) {
+    blood += num;
+    blood = constrain(blood, 0, 2*maxBlood);
+  }
+  
 }

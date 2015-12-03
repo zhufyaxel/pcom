@@ -3,12 +3,12 @@ public class BeatGame {
   int latency;        // loading resources need time
   int videoLatency;  // video is faster than sound, need time to align
   int userLatency;  // when you hear and follow the music you need time to react
-  
+
   String stage;   // stage 1: "practice" free trial
-                  // stage 2: "fight" play and monster fight, and score at the same time
-                  // stage 3: "defeated" player dead -> fight again: back to stage 2
-                  //                             -> practice again: back to stage 1
-  
+  // stage 2: "fight" play and monster fight, and score at the same time
+  // stage 3: "defeated" player dead -> fight again: back to stage 2
+  //                             -> practice again: back to stage 1
+
   int score;
   PImage tryagain = loadImage("images/background/try_again.png");
 
@@ -25,6 +25,7 @@ public class BeatGame {
   String[] orders;
   int[] beatJudges;
   int sum;
+  String serialInput;  //serial input
 
   // monster's orders
   String monsOrder;
@@ -34,7 +35,7 @@ public class BeatGame {
   // visual and sound
   Visual visual;
   SoundFile music;
-  
+
   SoundFile dol;
   SoundFile mi;
   SoundFile sol;
@@ -57,7 +58,7 @@ public class BeatGame {
     phase = 0;
     beatNum = 0;
     beatIn = true;
-    
+
     stage = "practice";
     score = 0;
 
@@ -83,7 +84,7 @@ public class BeatGame {
     dol.amp(0.2);
     mi.amp(0.2);
     sol.amp(0.2);
-    
+
     // characters and monsters
     yue = new Defender(interval, 466, 489, 241, 388, 4);
     zhu = new Warrior(interval, 285, 489, 226, 388, 4);
@@ -105,91 +106,91 @@ public class BeatGame {
     beatCycle();
 
     visual.show(beatNum, beatIn, phase, interval);
-    
+
     switch(stage) {
-      case "practice":
-        if (key == 'f' || key == 'F' ) {
-          stage = "fight";
-          break;
-        }
-
-        if (mon.size() > 0) {
-         mon.get(0).lifeCycle(beatNum, phase);
-
-         if (!mon.get(0).isAlive()) {
-           // ********** score here somehow ************//
-           mon.remove(0);
-           beatClear = beatNum;
-         }
-        }
-        // respawn the monster
-        // try to avoid respawn on beat
-        if(mon.size() == 0) {
-         if ((beatNum - beatClear) == monsInterval) {
-           mon.add(new Monster(interval, 760, 450, 436, 465, 12));
-         }
-        }
-        
-        wangshu.lifeCycle(beatNum, phase);
-        zhu.lifeCycle(beatNum, phase);
-        yue.lifeCycle(beatNum, phase);
-        
+    case "practice":
+      if (key == 'f' || key == 'F' ) {
+        stage = "fight";
         break;
-      
-      case "fight":
-        if (!zhu.isAlive()) {
-          stage = "defeated";
-          break;
-        }
-        
-        if (mon.size() > 0) {
-         mon.get(0).lifeCycle(beatNum, phase);
+      }
 
-         if (!mon.get(0).isAlive()) {
-           // ********** score here somehow ************//
-           mon.clear();
-           beatClear = beatNum;
-         }
+      if (mon.size() > 0) {
+        mon.get(0).lifeCycle(beatNum, phase);
+
+        if (!mon.get(0).isAlive()) {
+          // ********** score here somehow ************//
+          mon.remove(0);
+          beatClear = beatNum;
         }
-        // respawn the monster
-        // try to avoid respawn on beat
-        if(mon.size() == 0) {
-         if ((beatNum - beatClear) == monsInterval) {
-           mon.add(new Monster(interval, 760, 450, 436, 465, 12));
-         }
+      }
+      // respawn the monster
+      // try to avoid respawn on beat
+      if (mon.size() == 0) {
+        if ((beatNum - beatClear) == monsInterval) {
+          mon.add(new Monster(interval, 760, 450, 436, 465, 12));
         }
-        
-        wangshu.lifeCycle(beatNum, phase);
-        zhu.lifeCycle(beatNum, phase);
-        yue.lifeCycle(beatNum, phase);
-    
+      }
+
+      wangshu.lifeCycle(beatNum, phase);
+      zhu.lifeCycle(beatNum, phase);
+      yue.lifeCycle(beatNum, phase);
+
+      break;
+
+    case "fight":
+      if (!zhu.isAlive()) {
+        stage = "defeated";
         break;
-        
-      case "defeated":
-        if (mon.size() > 0) {
-          mon.get(0).lifeCycle(beatNum, phase);
+      }
+
+      if (mon.size() > 0) {
+        mon.get(0).lifeCycle(beatNum, phase);
+
+        if (!mon.get(0).isAlive()) {
+          // ********** score here somehow ************//
+          mon.clear();
+          beatClear = beatNum;
         }
-        
-        showOptions();    // heal = practice mode, attack = fight mode
-        
-        if (orders[0] == "Heal") {
-          yue = new Defender(interval, 466, 489, 241, 388, 4);
-          zhu = new Warrior(interval, 285, 489, 226, 388, 4);
-          wangshu = new Mage(interval, 139, 489, 225, 388, 4);
-          
-          stage = "practice";
-          break;
+      }
+      // respawn the monster
+      // try to avoid respawn on beat
+      if (mon.size() == 0) {
+        if ((beatNum - beatClear) == monsInterval) {
+          mon.add(new Monster(interval, 760, 450, 436, 465, 12));
         }
-        if (orders[0] == "Attack") {
-          yue = new Defender(interval, 466, 489, 241, 388, 4);
-          zhu = new Warrior(interval, 285, 489, 226, 388, 4);
-          wangshu = new Mage(interval, 139, 489, 225, 388, 4);
-          
-          stage = "fight";
-          break;
-        }
-        
+      }
+
+      wangshu.lifeCycle(beatNum, phase);
+      zhu.lifeCycle(beatNum, phase);
+      yue.lifeCycle(beatNum, phase);
+
+      break;
+
+    case "defeated":
+      if (mon.size() > 0) {
+        mon.get(0).lifeCycle(beatNum, phase);
+      }
+
+      showOptions();    // heal = practice mode, attack = fight mode
+
+      if (orders[0] == "Heal") {
+        yue = new Defender(interval, 466, 489, 241, 388, 4);
+        zhu = new Warrior(interval, 285, 489, 226, 388, 4);
+        wangshu = new Mage(interval, 139, 489, 225, 388, 4);
+
+        stage = "practice";
         break;
+      }
+      if (orders[0] == "Attack") {
+        yue = new Defender(interval, 466, 489, 241, 388, 4);
+        zhu = new Warrior(interval, 285, 489, 226, 388, 4);
+        wangshu = new Mage(interval, 139, 489, 225, 388, 4);
+
+        stage = "fight";
+        break;
+      }
+
+      break;
     }
   }
 
@@ -206,8 +207,8 @@ public class BeatGame {
       if (phase < one_third) {  // on new beat 
         beatIn = true;
         beatNum += 1;
-        
-        onBeat(); 
+
+        onBeat();
       }
     }
   }
@@ -216,16 +217,13 @@ public class BeatGame {
   void onBeat() {
     int n = beatNum % 6;
 
-    //if (n == 0) {
-    //  sol.play();
-    //}
-
     // players' cycle
     if (stage != "defeated") {
       if (n == 3) {
-        //sum = beatJudges[0] + beatJudges[1] + beatJudges[2];
-        sum = 6;
+        sum = beatJudges[0] + beatJudges[1] + beatJudges[2];
+        //sum = 6;
         if (orders[0] == "Attack" ) {
+          //zhu.jump(true);
           zhu.setState("attack");
           playerAttack(sum);
           println("Attack", sum);
@@ -246,16 +244,14 @@ public class BeatGame {
           beatJudges[i] = 0;
         }
       }
-      
+
       if (n == 5 && wangshu.currentState() == "heal") {
         playerHeal(sum);
       }
     }
 
     // monsters' cycle: random decision to attack, charge up and execute the same time as players
-    // 24 beats after start, begin to hit players
     // make decision at beatNum 2, show intension at beat 345, charging at next beat 012, attack at next beat 345.
-    // attack and anything 
     if (stage == "fight" && mon.size() > 0 && mon.get(0).isAlive()) {    //beatNum > 24 && mon.get(0).alive
       if (n == 2) {
         if (monsOrder == "stay" && mon.get(0).currentState() == "stay") {
@@ -288,7 +284,7 @@ public class BeatGame {
       mon.get(0).blood -= sum;
     }
   }
-  
+
   void monsterAttack() {
     if (orders[0] == "Defend") {
       if (sum == 6) {
@@ -322,17 +318,17 @@ public class BeatGame {
       }
     }
   }
-  
+
   void showOptions() {
     image(tryagain, width/2, height/2);
   }
-  
+
   // custom keyPressed event
   // a - mage, s - warrior, d - defendor
   // Up - increase latency; Down - decrease latency
   void myKeyPressed() {
     if (key != CODED) {  // ASD controls characters
-      pushValues();
+      inputValues();
     } 
     // if key == coded, UP and DOWN adjust additional latency
     else {
@@ -340,65 +336,22 @@ public class BeatGame {
     }
   }
 
-  void pushValues() {
-    int currentPhase = (millis() - latency - videoLatency - userLatency) % interval;
-    boolean onBeat = (currentPhase <= one_third || currentPhase >= two_third);  // true if on beat
-    // beatNum 0, 1, 2, (3, 4, 5)
-    // when there is key there will be jump
-    // when there is a hit there will be effect, and register the first key
-    int n = beatNum % 6;
-    if (n < 3) {    // beatNum % 6 < 3 || beatNum == 5, because some may hit before the first beat
-      if (key=='a' || key == 'A') {
-        dol.play();
-        wangshu.jump(onBeat);
-        if (orders[n] == "Null") {
-          orders[n] = "Heal";
-          if (onBeat) {
-            beatJudges[n] = 2;
-          } else {
-            beatJudges[n] = 1;
-          }
-        }
-      }
-      if (key=='s' || key == 'S') {
-        sol.play();
-        zhu.jump(onBeat);
-        if (orders[n] == "Null") {
-          orders[n] = "Attack";
-          if (onBeat) {
-            beatJudges[n] = 2;
-          } else {
-            beatJudges[n] = 1;
-          }
-        }
-      }
-      if (key=='d' || key == 'D') {
-        mi.play();
-        yue.jump(onBeat);
-        if (orders[n] == "Null") {
-          orders[n] = "Defend";
-          if (onBeat) {
-            beatJudges[n] = 2;
-          } else {
-            beatJudges[n] = 1;
-          }
-        }
-      }
-    }
+  // physical input, same as keyboard
+  void myPort(String _input) {
+    serialInput = _input;
   }
 
-  // physical input, same as keyboard
-  void myPort(String input) {
+  void inputValues() {
     int currentPhase = (millis() - latency - videoLatency - userLatency) % interval;
-    //boolean onBeat = (currentPhase <= one_third || currentPhase >= two_third);  // true if on beat
-    boolean onBeat = true;
+    boolean onBeat = (currentPhase <= one_third || currentPhase >= two_third);  // true if on beat
+    //boolean onBeat = true;
     // beatNum 0, 1, 2, (3, 4, 5)
     // when there is key there will be jump
     // when there is a hit there will be effect, and register the first key
     int n = beatNum % 6;
     int index = n;
     if (n == 5) index = 0;
-    if (input == "wand") {
+    if (serialInput == "wand" || key=='a' || key == 'A') {
       dol.play();
       wangshu.jump(onBeat);
       if (n < 3 || n == 5) {    // beatNum % 6 < 3 || beatNum == 5, because some may hit before the first beat
@@ -412,7 +365,7 @@ public class BeatGame {
         }
       }
     }
-    if (input == "swipe") {
+    if (serialInput == "swipe" || key=='s' || key == 'S') {
       sol.play();
       zhu.jump(onBeat);
       if (n < 3 || n == 5) {    // beatNum % 6 < 3 || beatNum == 5, because some may hit before the first beat
@@ -426,7 +379,7 @@ public class BeatGame {
         }
       }
     }
-    if (input == "defend") {
+    if (serialInput == "defend" || key=='d' || key == 'D') {
       mi.play();
       yue.jump(onBeat);
       if (n < 3 || n == 5) {    // beatNum % 6 < 3 || beatNum == 5, because some may hit before the first beat

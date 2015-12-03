@@ -10,10 +10,11 @@ public class Player extends Creature {
     phase = _phase;
 
     if (alive && !dying) {
+      move();
+      
       switch(state) {
       case "stay":
         displayStay();
-        move();
         break;
 
       case "attack":
@@ -61,7 +62,7 @@ public class Player extends Creature {
   void displayStay() {
     if (alive && !dying) {
       int n = beatNum % 3;
-      if (beatNum % 6 < 3) {
+      if (beatNum % 6 < 3 && phase <= interval * 1/3) {
         image(stay[n], x, y, w, h);
         tint(236, 54, 53, 240);  //237,63,120    //236,54,53
         image(stay[n], x, y, w, h);
@@ -127,19 +128,25 @@ public class Warrior extends Player {
   void displayAttack() {
     if (beatNum % 6 == 3) {
       if (phase <= interval * 1/36) {
+        adjustX = 200;
         image(attack[0], x + 200, y, w, h);
       } else if (phase <= interval * 2/36) {
+        adjustX = 300;
         image(attack[1], x + 300, y, w, h);
       } else if (phase <= interval * 3/36) {
+        adjustX = 300;
         image(attack[2], x + 300, y, w, h);
       } else {
+        adjustX = 300;
         image(attack[3], x + 300, y, w, h);
       }
     }
     if (beatNum % 6 == 4) {
       if (phase <= interval * 1/9) {
+        adjustX = 200;
         image(attack[2], x + 200, y, w, h);
       } else if (phase <= interval * 2/9) {
+        adjustX = 0;
         image(attack[1], x, y, w, h);
       } else if (phase <= interval * 3/9) {
         image(attack[0], x, y, w, h);

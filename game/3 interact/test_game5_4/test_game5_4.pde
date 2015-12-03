@@ -17,7 +17,7 @@ void setup() {
   // I need to setup the background
   size(1024, 768, P2D);
   // *** serial port available ***
-  //myPort = new Serial(this, portName, 9600);
+  myPort = new Serial(this, portName, 9600);
   game = new BeatGame();
 }
 
@@ -35,21 +35,21 @@ void serialEvent(Serial myPort) {
     if (val != null && val.length() > 2){
       if (val.charAt(0) == 'd'){
         if (val.charAt(2) == 'f'){
-          println("defence");
+          //println("defence");
           game.myPort("defend");
         }
       }
       
       if (val.charAt(0) == 's'){
         if (val.charAt(2) == 's'){
-          println("swipe");
+          //println("swipe");
           game.myPort("swipe");
         }
       }
       
       if (val.charAt(0) == 'w'){
         if (val.charAt(2) == 'w'){
-          println("wand");
+          //println("wand");
           game.myPort("wand");
         }
       }

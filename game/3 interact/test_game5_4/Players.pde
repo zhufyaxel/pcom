@@ -1,4 +1,6 @@
 public class Player extends Creature {
+  String state;
+  
   Player(float x, float y, float w, float h, int b) {
     super(x, y, w, h, b);
   }

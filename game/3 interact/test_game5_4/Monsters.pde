@@ -1,5 +1,5 @@
-public class Monster extends Creature {
-  String state;
+public class Monster extends Creature {  
+  boolean scored;
   int lastBeatNum;
   
   PImage[] monster;
@@ -9,6 +9,7 @@ public class Monster extends Creature {
 
   Monster(float x, float y, float w, float h, int b) {
     super(x, y, w, h, b);
+    scored = false;
     state = "stay";
     
     monster = new PImage[3];
@@ -23,10 +24,12 @@ public class Monster extends Creature {
     
     monsterCharge = new PImage[3];
     for (int i = 0; i < 3; i++) {
-      monsterCharge[i] = loadImage("images/characters/monster/ma/ma"+ (i+3) + ".png");
+      //monsterCharge[i] = loadImage("images/characters/monster/ma/ma"+ (i+3) + ".png");
+      monsterCharge[i] = loadImage("images/characters/monster/mba/mba"+ (i+1) + ".png");
     }
     
-    monsterAtt = loadImage("images/characters/monster/ma/ma6.png");
+    //monsterAtt = loadImage("images/characters/monster/ma/ma6.png");
+    monsterAtt = loadImage("images/characters/monster/mba/mba6.png");
   }
 
   void lifeCycle(int beatNum) {
@@ -80,7 +83,7 @@ public class Monster extends Creature {
   }
   
   void displayPrep(int beatNum) {
-    tint(128,0,0);
+    tint(255,128,128);
     if (beatNum % 6 == 3) {
       image(monsterPrep[0], x, y, w, h);
       displayBlood();
@@ -95,7 +98,7 @@ public class Monster extends Creature {
   }
   
   void displayCharge(int beatNum) {
-    tint(255,0,0);
+    tint(255,90,90);
     if (beatNum % 6 == 0) {
       image(monsterCharge[0], x, y, w, h);
       displayBlood();
@@ -110,7 +113,7 @@ public class Monster extends Creature {
   }
   
   void displayAtt(int beatNum) {
-    tint(255,0,0);
+    tint(255,50,50);
     if (beatNum % 6 == 3) {
       image(monsterAtt, x, y, w, h);
       displayBlood();

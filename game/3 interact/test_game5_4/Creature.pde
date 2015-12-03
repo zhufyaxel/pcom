@@ -26,8 +26,6 @@ public class Creature {
   float acc;
 
   String state; //stay, attack, prepare, charge
-  //String displaystate;
-  //String type;
 
   Creature(float _x, float _y, float _w, float _h, int _b) {
     alive = true;

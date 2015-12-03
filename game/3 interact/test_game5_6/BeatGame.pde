@@ -9,7 +9,11 @@ public class BeatGame {
   // stage 3: "defeated" player dead -> fight again: back to stage 2
   //                             -> practice again: back to stage 1
 
+ 
   int score;
+  int beatFight;
+  int beatsSurvive;
+  
   PImage tryagain = loadImage("images/background/try_again.png");
 
   // music characteristics
@@ -61,6 +65,8 @@ public class BeatGame {
 
     stage = "practice";
     score = 0;
+    beatFight = 0;
+    beatsSurvive = 0;
 
     // input
     orders = new String[3];
@@ -96,8 +102,8 @@ public class BeatGame {
     music.loop();
     latency = millis();
     videoLatency = 450;  //300 with original
-    userLatency = 128;  //keyboard
-    //userLatency = 90;  // serial, special thanks for Zhi Gao
+    //userLatency = 128;  //keyboard
+    userLatency = 90;  // serial, special thanks for Zhi Gao
   }
 
   // main steps in draw()
@@ -111,6 +117,7 @@ public class BeatGame {
     case "practice":
       if (key == 'f' || key == 'F' ) {
         stage = "fight";
+        beatFight = beatNum;
         break;
       }
 
@@ -150,6 +157,7 @@ public class BeatGame {
           // ********** score here somehow ************//
           mon.clear();
           beatClear = beatNum;
+          score ++;
         }
       }
       // respawn the monster
@@ -163,6 +171,14 @@ public class BeatGame {
       wangshu.lifeCycle(beatNum, phase);
       zhu.lifeCycle(beatNum, phase);
       yue.lifeCycle(beatNum, phase);
+      
+      textSize(28);
+      fill(0);
+      
+      beatsSurvive = beatNum - beatFight;
+      text("Beats survived: "+ beatsSurvive, 180, 720);
+     
+      text("Killed: " + score, 680, 720);
 
       break;
 
@@ -172,6 +188,9 @@ public class BeatGame {
       }
 
       showOptions();    // heal = practice mode, attack = fight mode
+
+      text("Beats survived: "+ beatsSurvive, 180, 720);
+      text("Killed: " + score, 680, 720);
 
       if (orders[0] == "Heal") {
         yue = new Defender(interval, 466, 489, 241, 388, 4);
@@ -185,6 +204,9 @@ public class BeatGame {
         yue = new Defender(interval, 466, 489, 241, 388, 4);
         zhu = new Warrior(interval, 285, 489, 226, 388, 4);
         wangshu = new Mage(interval, 139, 489, 225, 388, 4);
+        
+        score = 0;
+        beatFight = beatNum;
 
         stage = "fight";
         break;
@@ -225,15 +247,18 @@ public class BeatGame {
         if (orders[0] == "Attack" ) {
           //zhu.jump(true);
           zhu.setState("attack");
+          zhu.removeArrow();
           playerAttack(sum);
           println("Attack", sum);
         }
         if (orders[0] == "Heal" ) {
           wangshu.setState("heal");
+          wangshu.removeArrow();
           println("Heal", sum);
         }
         if (orders[0] == "Defend" ) {
           yue.setState("defend");
+          yue.removeArrow();
           println("Defend", sum);
           //playerDefend(sum);  // see monsterattack
         }
@@ -356,6 +381,9 @@ public class BeatGame {
       wangshu.jump(onBeat);
       if (n < 3 || n == 5) {    // beatNum % 6 < 3 || beatNum == 5, because some may hit before the first beat
         if (orders[index] == "Null") {
+          if (index == 0) {
+            wangshu.addArrow();
+          }          
           orders[index] = "Heal";
           if (onBeat) {
             beatJudges[index] = 2;
@@ -370,6 +398,9 @@ public class BeatGame {
       zhu.jump(onBeat);
       if (n < 3 || n == 5) {    // beatNum % 6 < 3 || beatNum == 5, because some may hit before the first beat
         if (orders[index] == "Null") {
+          if (index == 0) {
+            zhu.addArrow();
+          }
           orders[index] = "Attack";
           if (onBeat) {
             beatJudges[index] = 2;
@@ -384,6 +415,9 @@ public class BeatGame {
       yue.jump(onBeat);
       if (n < 3 || n == 5) {    // beatNum % 6 < 3 || beatNum == 5, because some may hit before the first beat
         if (orders[index] == "Null") {
+          if (index == 0) {
+            yue.addArrow();
+          }
           orders[index] = "Defend";
           if (onBeat) {
             beatJudges[index] = 2;

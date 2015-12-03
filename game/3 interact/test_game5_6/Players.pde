@@ -18,7 +18,7 @@ public class Player extends Creature {
         break;
 
       case "attack":
-        if (beatNum % 6 == 5) {
+        if (beatNum % 6 == 4) {
           state = "stay";
           displayStay();
           move();
@@ -62,7 +62,7 @@ public class Player extends Creature {
   void displayStay() {
     if (alive && !dying) {
       int n = beatNum % 3;
-      if (beatNum % 6 < 3 && phase <= interval * 1/3) {
+      if (beatNum % 6 < 3 && phase <= interval * 1/4) {
         image(stay[n], x, y, w, h);
         tint(236, 54, 53, 240);  //237,63,120    //236,54,53
         image(stay[n], x, y, w, h);
@@ -71,8 +71,12 @@ public class Player extends Creature {
         noTint();
       } else {
         image(stay[n], x, y, w, h);
+      } 
+      
+      if (showArrow) {
+        image(arrow, x - 10 + adjustX, y + h/2  - 140 + adjustY);
       }
-
+      
       displayBlood();
     }
   }
@@ -125,38 +129,81 @@ public class Warrior extends Player {
     }
   }
 
+  // dumb slip at the monster
   void displayAttack() {
     if (beatNum % 6 == 3) {
-      if (phase <= interval * 1/36) {
+      if (phase <= interval * 1/18) {
         adjustX = 200;
         image(attack[0], x + 200, y, w, h);
-      } else if (phase <= interval * 2/36) {
-        adjustX = 300;
-        image(attack[1], x + 300, y, w, h);
       } else if (phase <= interval * 3/36) {
-        adjustX = 300;
-        image(attack[2], x + 300, y, w, h);
-      } else {
-        adjustX = 300;
-        image(attack[3], x + 300, y, w, h);
-      }
-    }
-    if (beatNum % 6 == 4) {
-      if (phase <= interval * 1/9) {
+        adjustX = 350;
+        image(attack[1], x + 350, y, w, h);
+      } else if (phase <= interval * 4/36) {
+        image(attack[2], x + 350, y, w, h);
+      } else if (phase <= interval / 2) {
+        image(attack[3], x + 350, y, w, h);
+      } else if (phase <= interval * 11/18) {
         adjustX = 200;
         image(attack[2], x + 200, y, w, h);
-      } else if (phase <= interval * 2/9) {
+      } else if (phase <= interval * 13/18) {
         adjustX = 0;
         image(attack[1], x, y, w, h);
-      } else if (phase <= interval * 3/9) {
+      } else if (phase <= interval * 15/18) {
         image(attack[0], x, y, w, h);
       } else {
-        image(stay[1], x, y, w, h);
+        image(stay[0], x, y, w, h);
       }
     }
+    //if (beatNum % 6 == 4) {
+    //  if (phase <= interval * 1/9) {
+
+    //  } else if (phase <= interval * 2/9) {
+
+    //  } else if (phase <= interval * 3/9) {
+
+    //  } else {
+    //    image(stay[1], x, y, w, h);
+    //  }
+    //}
     
     displayBlood();
   }
+
+  //// dumb slant upright
+  //void displayAttack() {
+  //  if (beatNum % 6 == 3) {
+  //    if (phase <= interval * 1/36) {
+  //      adjustX = 200;
+  //      adjustY = 100;
+  //      image(attack[0], x + 200, y - 50, w, h);
+  //    } else if (phase <= interval * 2/36) {
+  //      adjustX = 300;
+  //      adjustY = 50;
+  //      image(attack[1], x + 300, y - 100, w, h);
+  //    } else if (phase <= interval * 3/36) {
+  //      image(attack[2], x + 300, y - 100, w, h);
+  //    } else {
+  //      image(attack[3], x + 300, y - 100, w, h);
+  //    }
+  //  }
+  //  if (beatNum % 6 == 4) {
+  //    if (phase <= interval * 1/9) {
+  //      adjustX = 200;
+  //      adjustY = 100;
+  //      image(attack[2], x + 200, y - 50, w, h);
+  //    } else if (phase <= interval * 2/9) {
+  //      adjustX = 0;
+  //      adjustY = 150;
+  //      image(attack[1], x, y, w, h);
+  //    } else if (phase <= interval * 3/9) {
+  //      image(attack[0], x, y, w, h);
+  //    } else {
+  //      image(stay[1], x, y, w, h);
+  //    }
+  //  }
+    
+  //  displayBlood();
+  //}
 }
 
 public class Mage extends Player {

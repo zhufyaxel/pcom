@@ -29,7 +29,7 @@ public class BeatGame {
   String[] orders;
   int[] beatJudges;
   int sum;
-  String serialInput;  //serial input
+  String input;  //serial input or key input
 
   // monster's orders
   String monsOrder;
@@ -79,7 +79,7 @@ public class BeatGame {
     // monster's order
     monsOrder = "stay";    // stay, attack
     monsInterval1 = 8;     // practice mode
-    monsInterval2 = 14;    // fight mode
+    monsInterval2 = 20;    // fight mode
 
     // visual and music
     visual = new Visual();
@@ -116,10 +116,15 @@ public class BeatGame {
 
     switch(stage) {
     case "practice":
-      if (key == 'f' || key == 'F' ) {
+      if (key == '2') {
         stage = "fight";
         score = 0;
         beatFight = beatNum;
+        break;
+      }
+      
+      if (!zhu.isAlive()) {
+        stage = "defeated";
         break;
       }
 
@@ -152,6 +157,11 @@ public class BeatGame {
       break;
 
     case "fight":
+      if (key == '1') {
+        stage = "practice";
+        break;
+      }
+      
       if (!zhu.isAlive()) {
         stage = "defeated";
         break;
@@ -319,7 +329,7 @@ public class BeatGame {
 
   void monsterAttack() {
     if (orders[0] == "Defend") {
-      if (sum == 6) {
+      if (sum >= 4) {
         zhu.blood -= 0;
         yue.blood -= 0;
         wangshu.blood -= 0;
@@ -336,7 +346,7 @@ public class BeatGame {
   }
 
   void playerHeal(int sum) {
-    if (sum == 6) {
+    if (sum >=4) {
       if (zhu.blood < 2 * zhu.maxBlood) {
         zhu.blood += 2;
         yue.blood += 2;
@@ -356,10 +366,9 @@ public class BeatGame {
   }
 
 
-
-
   void myKeyPressed() {
     if (key != CODED) {  // ASD controls keys, alphabetical etc
+      myKeyInput();
       inputValues();
       takeDamage();
     } 
@@ -370,8 +379,21 @@ public class BeatGame {
   }
 
   // physical input, same as keyboard
-  void myPort(String _input) {
-    serialInput = _input;
+  void myKeyInput() {
+    if (key=='a' || key == 'A') {
+      input = "wand";
+    }
+    if (key=='s' || key == 'S') {
+      input = "swipe";
+    }
+    if (key=='d' || key == 'd') {
+      input = "defend";
+    }
+  }
+  
+  void myPortInput(String _input) {
+    input = _input;
+    inputValues();
   }
 
   void inputValues() {
@@ -384,7 +406,8 @@ public class BeatGame {
     int n = beatNum % 6;
     int index = n;
     if (n == 5) index = 0;
-    if (serialInput == "wand" || key=='a' || key == 'A') {
+    if (input == "wand") {
+      input = "";
       dol.play();
       wangshu.jump(onBeat);
       if (n < 3 || n == 5) {    // beatNum % 6 < 3 || beatNum == 5, because some may hit before the first beat
@@ -401,7 +424,8 @@ public class BeatGame {
         }
       }
     }
-    if (serialInput == "swipe" || key=='s' || key == 'S') {
+    if (input == "swipe") {
+      input = "";
       sol.play();
       zhu.jump(onBeat);
       if (n < 3 || n == 5) {    // beatNum % 6 < 3 || beatNum == 5, because some may hit before the first beat
@@ -418,7 +442,8 @@ public class BeatGame {
         }
       }
     }
-    if (serialInput == "defend" || key=='d' || key == 'D') {
+    if (input == "defend") {
+      input = "";
       mi.play();
       yue.jump(onBeat);
       if (n < 3 || n == 5) {    // beatNum % 6 < 3 || beatNum == 5, because some may hit before the first beat
@@ -440,7 +465,7 @@ public class BeatGame {
   // for practice purpose, slowly kill yourself
   void takeDamage() {
     println("Hey!!");
-    if (key == 'k' || key == 'K') {
+    if (key == '-') {
       zhu.changeBlood(-2);
       wangshu.changeBlood(-2);
       yue.changeBlood(-2);

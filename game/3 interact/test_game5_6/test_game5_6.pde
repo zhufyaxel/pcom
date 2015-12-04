@@ -36,21 +36,21 @@ void serialEvent(Serial myPort) {
       if (val.charAt(0) == 'd'){
         if (val.charAt(2) == 'f'){
           //println("defence");
-          game.myPort("defend");
+          game.myPortInput("defend");
         }
       }
       
       if (val.charAt(0) == 's'){
         if (val.charAt(2) == 's'){
           //println("swipe");
-          game.myPort("swipe");
+          game.myPortInput("swipe");
         }
       }
       
       if (val.charAt(0) == 'w'){
         if (val.charAt(2) == 'w'){
           //println("wand");
-          game.myPort("wand");
+          game.myPortInput("wand");
         }
       }
     }

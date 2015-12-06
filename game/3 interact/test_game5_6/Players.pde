@@ -2,7 +2,7 @@ public class Player extends Creature {
 
   Player(int interval, float x, float y, float w, float h, int b) {
     super(interval, x, y, w, h, b);
-    adjustY = 150;    // adjust displayBlood position
+    adjustY = 140;    // adjust displayBlood position
   }
 
   void lifeCycle(int _beatNum, int _phase) {

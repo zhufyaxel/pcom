@@ -113,7 +113,7 @@ public class Creature {
   }
 
   void displayBlood() {
-    int size = 35;
+    int size = 30;
     float currentX = x - float(maxBlood)/2 * size + size/2 + adjustX;
     float currentY = y - h/2 - size/2 + adjustY;
     for (int i = 0; i < maxBlood; i++) {

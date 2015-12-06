@@ -85,19 +85,19 @@ public class BeatGame {
     visual = new Visual();
     music = new SoundFile(test_game5_6.this, "music/funny_slow_drum2 2_mono.mp3");
 
-    dol = new SoundFile(test_game5_6.this, "music/dol.mp3");
-    mi = new SoundFile(test_game5_6.this, "music/mi.mp3");
-    sol = new SoundFile(test_game5_6.this, "music/sol.mp3");
+    dol = new SoundFile(test_game5_6.this, "music/dol_mono.mp3");
+    mi = new SoundFile(test_game5_6.this, "music/mi_mono.mp3");
+    sol = new SoundFile(test_game5_6.this, "music/sol_mono.mp3");
     dol.amp(0.2);
     mi.amp(0.2);
     sol.amp(0.2);
 
     // characters and monsters
-    yue = new Defender(interval, 466, 489, 241, 388, 4);
-    zhu = new Warrior(interval, 285, 489, 226, 388, 4);
-    wangshu = new Mage(interval, 139, 489, 225, 388, 4);
+    yue = new Defender(interval, 466, 489+30, 241*0.9, 388*0.9, 4);
+    zhu = new Warrior(interval, 285, 489+30, 226*0.9, 388*0.9, 4);
+    wangshu = new Mage(interval, 139, 489+30, 225*0.9, 388*0.9, 4);
     mon = new ArrayList<Monster>();
-    mon.add(new Monster(interval, 760, 450, 436, 465, 12));
+    mon.add(new Monster(interval, 760, 450+30, 436*0.9, 465*0.9, 12));
 
     // put music here to get accuracy
     music.loop();

@@ -12,7 +12,7 @@ public class Monster extends Creature {
     stay[1] = loadImage("images/characters/monster/m/m3.png");
     stay[2] = loadImage("images/characters/monster/m/m2.png");
     
-    adjustY = 50;    // adjust displayBlood position
+    adjustY = 60;    // adjust displayBlood position
     
     prepare = new PImage[3];
     charge = new PImage[3];

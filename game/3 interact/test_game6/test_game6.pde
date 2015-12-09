@@ -17,7 +17,7 @@ void setup() {
   // I need to setup the background
   size(1024, 768, P2D);
   // *** serial port available ***
-  myPort = new Serial(this, portName, 9600);
+  //myPort = new Serial(this, portName, 9600);
   game = new BeatGame();
 }
 

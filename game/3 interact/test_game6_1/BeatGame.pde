@@ -40,40 +40,48 @@ public class BeatGame {
   Visual visual;
   SoundFile music;
 
-  SoundFile dol;
-  SoundFile mi;
-  SoundFile sol;
-  
-  SoundFile doom;
-  SoundFile cha;
+  String dol, mi, sol;
+  ArrayList<Note> notes;
 
   // Characters and monsters
   Defender yue;
   Warrior zhu;
   Mage shu;
   ArrayList<Monster> mon;
-  
+
   // positions and parameters
   float xYue, yYue, wYue, hYue;
   float xZhu, yZhu, wZhu, hZhu;
   float xShu, yShu, wShu, hShu;
   int bPlayer;
-  
+
   float xMon, yMon, wMon, hMon;
   int bMon;
-  
+
 
   BeatGame () {
     // global settings
     imageMode(CENTER);
-    
+
     // creatures' parameters
-    xYue = 466; yYue = 489; wYue = 241*0.95; hYue = 388*0.95;
-    xZhu = 285; yZhu = 489; wZhu = 226*0.95; hZhu = 388*0.95;
-    xShu = 139; yShu = 489; wShu = 225*0.95; hShu = 388*0.95;
+    xYue = 466; 
+    yYue = 489; 
+    wYue = 241*0.95; 
+    hYue = 388*0.95;
+    xZhu = 285; 
+    yZhu = 489; 
+    wZhu = 226*0.95; 
+    hZhu = 388*0.95;
+    xShu = 139; 
+    yShu = 489; 
+    wShu = 225*0.95; 
+    hShu = 388*0.95;
     bPlayer = 4;
-    
-    xMon = 760; yMon = 450; wMon = 438*0.95; hMon = 465*0.95;
+
+    xMon = 760; 
+    yMon = 450; 
+    wMon = 438*0.95; 
+    hMon = 465*0.95;
     bMon = 12;
 
     // global vals
@@ -105,22 +113,12 @@ public class BeatGame {
 
     // visual and music
     visual = new Visual();
-    music = new SoundFile(test_game6_1.this, "music/funny_slow_drum2 2.mp3");
+    music = new SoundFile(test_game6_1.this, "music/funny_slow_drum2 2_min.mp3");
 
-    dol = new SoundFile(test_game6_1.this, "music/dol_min.mp3");
-    mi = new SoundFile(test_game6_1.this, "music/mi_min.mp3");
-    sol = new SoundFile(test_game6_1.this, "music/sol_min.mp3");
-    
-    //doom = new SoundFile(test_game6.this, "music/doom.mp3");
-    //cha = new SoundFile(test_game6.this, "music/cha.mp3");
-    
-    music.amp(0.6);
-    dol.amp(0.1);
-    mi.amp(0.1);
-    sol.amp(0.1);
-    
-    //doom.amp(1);
-    //cha.amp(1);
+    dol = "music/dol_min.mp3";
+    mi = "music/mi_min.mp3";
+    sol = "music/sol_min.mp3";
+    notes = new ArrayList<Note>();
 
     // characters and monsters
     yue = new Defender(interval, xYue, yYue, wYue, hYue, bPlayer);
@@ -129,8 +127,10 @@ public class BeatGame {
     mon = new ArrayList<Monster>();
     mon.add(new Monster(interval, xMon, yMon, wMon, hMon, bMon));
 
-    // put music here to get accuracy
+    // put music here to get accuracy    
+    music.amp(0.6);      
     music.loop();
+
     latency = millis();
     videoLatency = 740;  //300 with original
     //userLatency = 128;  //keyboard
@@ -142,6 +142,8 @@ public class BeatGame {
     background(0);
     beatCycle();
 
+    noteCycle();
+
     visual.show(beatNum, beatIn, phase, interval);
 
     switch(stage) {
@@ -152,7 +154,7 @@ public class BeatGame {
         beatFight = beatNum;
         break;
       }
-      
+
       if (!zhu.isAlive()) {
         stage = "defeated";
         break;
@@ -179,7 +181,7 @@ public class BeatGame {
       shu.lifeCycle(beatNum, phase);
       zhu.lifeCycle(beatNum, phase);
       yue.lifeCycle(beatNum, phase);
-      
+
       textSize(28);
       fill(0);
       text("Killed: " + score, 680, 720);
@@ -191,7 +193,7 @@ public class BeatGame {
         stage = "practice";
         break;
       }
-      
+
       if (!zhu.isAlive()) {
         stage = "defeated";
         break;
@@ -348,6 +350,19 @@ public class BeatGame {
     }
   }
 
+  void noteCycle() {
+    if (notes.size() > 0) {
+      for (int i = 0; i < notes.size(); i++) {
+        notes.get(i).life();
+        if (!notes.get(i).isPlaying) {
+          println(i);
+          println(notes.get(i).sound.returnId());
+          notes.remove(i);
+        }
+      }
+    }
+  }
+
   void playerAttack(int sum) {
     //zhu.attack(int phase, int interval);
     // ******** when player is alive then do attack ********
@@ -420,7 +435,7 @@ public class BeatGame {
       input = "defend";
     }
   }
-  
+
   void myPortInput(String _input) {
     input = _input;
     inputValues();
@@ -431,19 +446,19 @@ public class BeatGame {
     int n = beatNum % 6;
     int index = n;
     if (n == 5) index = 0;
-    
+
     boolean onCycle = (n < 3 || (n == 5 && currentPhase > two_third));
     boolean onBeat = (currentPhase <= one_third || currentPhase >= two_third);  // true if on beat
     //boolean onBeat = true;
     // beatNum 0, 1, 2, (3, 4, 5)
     // when there is key there will be jump
     // when there is a hit there will be effect, and register the first key
-    
+
     if (input == "wand") {
       input = "";
       shu.jump(onCycle && onBeat);
       if (onCycle) {    // beatNum % 6 < 3 || beatNum == 5, because some may hit before the first beat
-        dol.play();
+        notes.add(new Note(dol));
         if (orders[index] == "Null") {
           if (index == 0) {
             shu.addArrow();
@@ -461,7 +476,7 @@ public class BeatGame {
       input = "";
       zhu.jump(onCycle && onBeat);
       if (onCycle) {    // beatNum % 6 < 3 || beatNum == 5, because some may hit before the first beat
-        sol.play();        
+        notes.add(new Note(sol));      
         if (orders[index] == "Null") {
           if (index == 0) {
             zhu.addArrow();
@@ -479,7 +494,7 @@ public class BeatGame {
       input = "";
       yue.jump(onCycle && onBeat);
       if (onCycle) {    // beatNum % 6 < 3 || beatNum == 5, because some may hit before the first beat
-        mi.play();
+        notes.add(new Note(mi));
         if (orders[index] == "Null") {
           if (index == 0) {
             yue.addArrow();

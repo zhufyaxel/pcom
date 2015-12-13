@@ -40,6 +40,7 @@ public class BeatGame {
   // sound
   Minim minim;
   AudioPlayer music;
+  AudioPlayer magic, swipe, shield;
   Note dol, mi, sol;
   Note dol_low, mi_low, sol_low;
 
@@ -69,6 +70,10 @@ public class BeatGame {
     // sound (Minim!!)
     minim = new Minim(test_game6_1.this);
     music = minim.loadFile("music/funny_170.mp3", 512);
+    magic = minim.loadFile("music/magic.mp3", 512);
+    swipe = minim.loadFile("music/swipe.mp3", 512);
+    shield = minim.loadFile("music/shield.mp3", 512);
+    
     dol = new Note(minim, "music/dol.mp3");
     mi = new Note(minim, "music/mi.mp3");
     sol = new Note(minim, "music/sol.mp3");
@@ -292,12 +297,17 @@ public class BeatGame {
         //power = 6;
         if (orders[0] == "Attack" ) {
           //zhu.jump(true);
+          swipe.rewind();
+          swipe.cue(50);
+          swipe.play();
           zhu.setState("attack");
           zhu.removeArrow();
           playerAttack(power);
           println("Attack", power);
         }
         if (orders[0] == "Heal" ) {
+          magic.rewind();
+          magic.play();
           shu.setState("heal");
           shu.removeArrow();
           println("Heal", power);
@@ -326,8 +336,8 @@ public class BeatGame {
     if (stage == "fight" && mon.size() > 0 && mon.get(0).isAlive()) {    //beatNum > 24 && mon.get(0).alive
       if (n == 2) {
         if (monsOrder == "stay" && mon.get(0).currentState() == "stay") {
-          int mood = int(random(0, 3));
-          if (mood == 1) {
+          int mood = int(random(0, 1));
+          if (mood == 0) {
             monsOrder = "attack";
           } else {
             monsOrder = "stay";
@@ -358,6 +368,9 @@ public class BeatGame {
 
   void monsterAttack() {
     if (orders[0] == "Defend") {
+      shield.rewind();
+      shield.cue(50);
+      shield.play();
       if (power == 6) {
         zhu.blood -= 0;
         yue.blood -= 0;
@@ -521,4 +534,70 @@ public class BeatGame {
     }
   }
 
+}
+
+
+
+
+public class Visual {
+  PImage imgBkg;
+  PImage imgPlanet;
+  PImage imgEyes;
+  PImage[] imgGrass;
+
+  Visual() {
+    imgBkg = loadImage("images/background/background.png");
+    imgPlanet = loadImage("images/background/blinking planet.png");
+    imgEyes = loadImage("images/background/blinking eye.png");
+    imgGrass = new PImage[3];
+    for (int i = 0; i < imgGrass.length; i++) {
+      imgGrass[i] = loadImage("images/background/grass" + i + ".png");
+    }
+  }
+
+  void show(int beatNum, boolean beatIn, int phase, int interval) {    
+    // planet, quick fade in and slow fade out
+    if (phase > 11*interval/12 && beatNum % 6 == 5) {
+      tint(255, 126);
+      image(imgPlanet, width/2, height/2);
+      noTint();
+    }
+    if (beatNum%6 == 0 || beatNum%6 == 1|| (beatNum%6 == 2 && beatIn)) {
+      image(imgPlanet, width/2, height/2);
+    } 
+    if ( (beatNum%6 == 2 && !beatIn)) {
+      tint(255, 126);
+      image(imgPlanet, width/2, height/2);
+      noTint();
+    }
+
+    // trees
+    image(imgBkg, width/2, height/2); 
+
+    // eyes
+    if (beatNum % 6 <= 1 ) {
+      image(imgEyes, width/2, height/2);
+    } else if (beatNum % 6 == 2) {
+      tint(255, 170);
+      image(imgEyes, width/2, height/2);
+      noTint();
+    } else if (beatNum % 6 == 5) {
+      if (!beatIn) {
+        tint(255, 127);
+        image(imgEyes, width/2, height/2);
+        noTint();
+      }
+    }
+
+    // grass
+    if (beatIn) {
+      if (beatNum %3 == 0) {
+        image(imgGrass[0], width/2, height/2);
+      } else {
+        image(imgGrass[2], width/2, height/2);
+      }
+    } else {
+      image(imgGrass[1], width/2, height/2);
+    }
+  }
 }

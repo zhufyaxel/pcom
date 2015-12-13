@@ -6,10 +6,12 @@ public class Creature {
   String state; //stay, attack, prepare, charge
   
   PImage stay[];
-  PImage attack[];
   
+  PImage attack[];
   PImage defend[];
   PImage heal[];
+  
+  PImage beAttacked[];
   PImage prepare[];
   PImage charge[];
   

@@ -4,8 +4,8 @@
 // use Up and Down arrows to adjust user latency
 // use Right and Left arrows to adjust system latency
 
-import processing.sound.*;
 import processing.serial.*;
+import ddf.minim.*;
 
 Serial myPort;  // Create object from Serial class
 String val;      // Data received from the serial port

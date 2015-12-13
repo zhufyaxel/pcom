@@ -1,14 +1,9 @@
 public class BeatGame {
-  // global variables
-  int latency;        // loading resources need time
-  int videoLatency;  // video is faster than sound, need time to align
-  int userLatency;  // when you hear and follow the music you need time to react
-
+  // stage related
   String stage;   // stage 1: "practice" free trial
   // stage 2: "fight" play and monster fight, and score at the same time
   // stage 3: "defeated" player dead -> fight again: back to stage 2
   //                             -> practice again: back to stage 1
-
 
   int score;
   int beatFight;
@@ -21,6 +16,9 @@ public class BeatGame {
   int interval;
   int one_third;
   int two_third;
+  
+  int latency;
+  int currentTime;
   int phase;
   int beatNum;  // boom = 0; cha = 1; cha = 2; act 3; act 4; act 5;
   boolean beatIn;  // boom {beatIn (2/3), beatOff (1/3)}, cha {beatIn, beatOff}, cha {beatIn, beatOff}
@@ -28,7 +26,7 @@ public class BeatGame {
   // input controls and vals (v2, multiple_key3)
   String[] orders;
   int[] beatJudges;
-  int sum;
+  int power;
   String input;  //serial input or key input
 
   // monster's orders
@@ -36,12 +34,14 @@ public class BeatGame {
   int beatClear;    // time when clear up the monster
   int monsInterval1, monsInterval2;  // gap between a new monster respawn
 
-  // visual and sound
+  // visual
   Visual visual;
-  SoundFile music;
-
-  String dol, mi, sol;
-  ArrayList<Note> notes;
+  
+  // sound
+  Minim minim;
+  AudioPlayer music;
+  Note dol, mi, sol;
+  Note dol_low, mi_low, sol_low;
 
   // Characters and monsters
   Defender yue;
@@ -63,6 +63,19 @@ public class BeatGame {
     // global settings
     imageMode(CENTER);
 
+    // visual
+    visual = new Visual();
+    
+    // sound (Minim!!)
+    minim = new Minim(test_game6_1.this);
+    music = minim.loadFile("music/funny_170.mp3", 512);
+    dol = new Note(minim, "music/dol.mp3");
+    mi = new Note(minim, "music/mi.mp3");
+    sol = new Note(minim, "music/sol.mp3");
+    dol_low = new Note(minim, "music/dol_low.mp3");
+    mi_low = new Note(minim, "music/mi_low.mp3");
+    sol_low = new Note(minim, "music/sol_low.mp3");
+    
     // creatures' parameters
     xYue = 466; 
     yYue = 489; 
@@ -85,7 +98,7 @@ public class BeatGame {
     bMon = 12;
 
     // global vals
-    bpm = 150;    // 180 with funny
+    bpm = 170;    // 180 with funny
     interval = round(60000.0/bpm); // milliseconds, 60 * 1000 / bpm 
     one_third = interval *1/3;
     two_third = interval *2/3;
@@ -109,40 +122,24 @@ public class BeatGame {
     // monster's order
     monsOrder = "stay";    // stay, attack
     monsInterval1 = 8;     // practice mode
-    monsInterval2 = 20;    // fight mode
-
-    // visual and music
-    visual = new Visual();
-    music = new SoundFile(test_game6_1.this, "music/funny_slow_drum2 2_min.mp3");
-
-    dol = "music/dol_min.mp3";
-    mi = "music/mi_min.mp3";
-    sol = "music/sol_min.mp3";
-    notes = new ArrayList<Note>();
-
+    monsInterval2 = 14;    // fight mode
+    
     // characters and monsters
     yue = new Defender(interval, xYue, yYue, wYue, hYue, bPlayer);
     zhu = new Warrior(interval, xZhu, yZhu, wZhu, hZhu, bPlayer);
     shu = new Mage(interval, xShu, yShu, wShu, hShu, bPlayer);
     mon = new ArrayList<Monster>();
     mon.add(new Monster(interval, xMon, yMon, wMon, hMon, bMon));
-
-    // put music here to get accuracy    
-    music.amp(0.6);      
+    
+    music.setLoopPoints(0, 120*interval);  //if 120 beats
     music.loop();
-
-    latency = millis();
-    videoLatency = 740;  //300 with original
-    //userLatency = 128;  //keyboard
-    userLatency = 90;  // serial, special thanks for Zhi Gao
+    latency = millis() - music.position();
   }
 
   // main steps in draw()
   void execute() {
     background(0);
     beatCycle();
-
-    noteCycle();
 
     visual.show(beatNum, beatIn, phase, interval);
 
@@ -267,8 +264,9 @@ public class BeatGame {
 
   //compute some music characteristics that control all visuals and characters
   void beatCycle() {
-    int currentTime = millis() - latency - videoLatency;  //correction
+    currentTime = millis() - latency;
     phase = currentTime % interval;
+    beatNum = currentTime / interval;
 
     if (beatIn) {
       if (phase >= two_third) {
@@ -277,7 +275,6 @@ public class BeatGame {
     } else {
       if (phase < one_third) {  // on new beat 
         beatIn = true;
-        beatNum += 1;
 
         onBeat();
       }
@@ -291,25 +288,25 @@ public class BeatGame {
     // players' cycle
     if (stage != "defeated") {
       if (n == 3) {
-        sum = beatJudges[0] + beatJudges[1] + beatJudges[2];
-        //sum = 6;
+        power = beatJudges[0] + beatJudges[1] + beatJudges[2];
+        //power = 6;
         if (orders[0] == "Attack" ) {
           //zhu.jump(true);
           zhu.setState("attack");
           zhu.removeArrow();
-          playerAttack(sum);
-          println("Attack", sum);
+          playerAttack(power);
+          println("Attack", power);
         }
         if (orders[0] == "Heal" ) {
           shu.setState("heal");
           shu.removeArrow();
-          println("Heal", sum);
+          println("Heal", power);
         }
         if (orders[0] == "Defend" ) {
           yue.setState("defend");
           yue.removeArrow();
-          println("Defend", sum);
-          //playerDefend(sum);  // see monsterattack
+          println("Defend", power);
+          //playerDefend(power);  // see monsterattack
         }
       }
       if (n == 4) {
@@ -320,7 +317,7 @@ public class BeatGame {
       }
 
       if (n == 5 && shu.currentState() == "heal") {
-        playerHeal(sum);
+        playerHeal(power);
       }
     }
 
@@ -350,49 +347,46 @@ public class BeatGame {
     }
   }
 
-  void noteCycle() {
-    if (notes.size() > 0) {
-      for (int i = 0; i < notes.size(); i++) {
-        notes.get(i).life();
-        if (!notes.get(i).isPlaying) {
-          println(i);
-          println(notes.get(i).sound.returnId());
-          notes.remove(i);
-        }
-      }
-    }
-  }
-
-  void playerAttack(int sum) {
+  void playerAttack(int power) {
     //zhu.attack(int phase, int interval);
     // ******** when player is alive then do attack ********
     // so they really need to share life, or just pretent to do so
     if (mon.size() > 0) {
-      mon.get(0).blood -= sum;
+      mon.get(0).blood -= power;
     }
   }
 
   void monsterAttack() {
     if (orders[0] == "Defend") {
-      if (sum >= 4) {
+      if (power == 6) {
         zhu.blood -= 0;
         yue.blood -= 0;
         shu.blood -= 0;
-      } else {
+      } else if (power > 2) {
         zhu.blood -= 1;
         yue.blood -= 1;
         shu.blood -= 1;
+      } else {
+        zhu.blood -= 2;
+        yue.blood -= 2;
+        shu.blood -= 2;
       }
     } else {
-      zhu.blood -= 2;
-      yue.blood -= 2;
-      shu.blood -= 2;
+      zhu.blood -= 3;
+      yue.blood -= 3;
+      shu.blood -= 3;
     }
   }
 
-  void playerHeal(int sum) {
-    if (sum >=4) {
+  void playerHeal(int power) {
+    if (power == 6) {
       if (zhu.blood < 2 * zhu.maxBlood) {
+        zhu.blood += 3;
+        yue.blood += 3;
+        shu.blood += 3;
+      }
+    } else if (power > 2) {
+      if (zhu.blood < 2* zhu.maxBlood) {
         zhu.blood += 2;
         yue.blood += 2;
         shu.blood += 2;
@@ -412,15 +406,8 @@ public class BeatGame {
 
 
   void myKeyPressed() {
-    if (key != CODED) {  // ASD controls keys, alphabetical etc
-      myKeyInput();
-      inputValues();
-      takeDamage();
-    } 
-    // if key == coded, UP and DOWN adjust additional latency
-    else {
-      adjustLatency();
-    }
+     myKeyInput();
+     takeDamage();
   }
 
   // physical input, same as keyboard
@@ -434,6 +421,8 @@ public class BeatGame {
     if (key=='d' || key == 'd') {
       input = "defend";
     }
+    
+    inputValues();
   }
 
   void myPortInput(String _input) {
@@ -442,13 +431,10 @@ public class BeatGame {
   }
 
   void inputValues() {
-    int currentPhase = (millis() - latency - videoLatency - userLatency) % interval;
-    int n = beatNum % 6;
-    int index = n;
-    if (n == 5) index = 0;
+    int index = ((currentTime + interval/2) / interval) % 6;  //align to center
 
-    boolean onCycle = (n < 3 || (n == 5 && currentPhase > two_third));
-    boolean onBeat = (currentPhase <= one_third || currentPhase >= two_third);  // true if on beat
+    boolean onCycle = (index < 3);
+    boolean onBeat = (phase <= one_third || phase >= two_third);  // true if on beat
     //boolean onBeat = true;
     // beatNum 0, 1, 2, (3, 4, 5)
     // when there is key there will be jump
@@ -458,7 +444,11 @@ public class BeatGame {
       input = "";
       shu.jump(onCycle && onBeat);
       if (onCycle) {    // beatNum % 6 < 3 || beatNum == 5, because some may hit before the first beat
-        notes.add(new Note(dol));
+        if (onBeat) {
+          dol.play();
+        } else {
+          dol_low.play();
+        }
         if (orders[index] == "Null") {
           if (index == 0) {
             shu.addArrow();
@@ -469,6 +459,7 @@ public class BeatGame {
           } else {
             beatJudges[index] = 1;
           }
+          println(index, orders[index], onBeat);
         }
       }
     }
@@ -476,7 +467,11 @@ public class BeatGame {
       input = "";
       zhu.jump(onCycle && onBeat);
       if (onCycle) {    // beatNum % 6 < 3 || beatNum == 5, because some may hit before the first beat
-        notes.add(new Note(sol));      
+        if (onBeat) {
+          sol.play();
+        } else {
+          sol_low.play();
+        } 
         if (orders[index] == "Null") {
           if (index == 0) {
             zhu.addArrow();
@@ -487,6 +482,7 @@ public class BeatGame {
           } else {
             beatJudges[index] = 1;
           }
+          println(index, orders[index], onBeat);
         }
       }
     }
@@ -494,7 +490,11 @@ public class BeatGame {
       input = "";
       yue.jump(onCycle && onBeat);
       if (onCycle) {    // beatNum % 6 < 3 || beatNum == 5, because some may hit before the first beat
-        notes.add(new Note(mi));
+        if (onBeat) {
+          mi.play();
+        } else {
+          mi_low.play();
+        } 
         if (orders[index] == "Null") {
           if (index == 0) {
             yue.addArrow();
@@ -505,6 +505,7 @@ public class BeatGame {
           } else {
             beatJudges[index] = 1;
           }
+          println(index, orders[index], onBeat);
         }
       }
     }
@@ -512,27 +513,12 @@ public class BeatGame {
 
   // for practice purpose, slowly kill yourself
   void takeDamage() {
-    println("Hey!!");
     if (key == '-') {
+      println("Hey!!");
       zhu.changeBlood(-2);
       shu.changeBlood(-2);
       yue.changeBlood(-2);
     }
   }
 
-  void adjustLatency () {
-    if (keyCode == UP) {
-      userLatency += 5;
-      println("User Latency: ", userLatency);
-    } else if (keyCode == DOWN) {
-      userLatency -= 5;
-      println("User Latency: ", userLatency);
-    } else if (keyCode == RIGHT) {
-      videoLatency += 10;
-      println("Video Latency: ", videoLatency);
-    } else if (keyCode == LEFT) {
-      videoLatency -= 10;
-      println("Video Latency: ", videoLatency);
-    }
-  }
 }

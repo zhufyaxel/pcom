@@ -13,7 +13,6 @@ public class BeatGame {
 
   // music characteristics
   int bpm;
-  int interval;
   BeatMachine bm;
 
   // input controls and vals (v2, multiple_key3)
@@ -76,7 +75,7 @@ public class BeatGame {
     
     // global vals
     bpm = 170;    // 180 with funny
-    interval = round(60000.0/bpm); // milliseconds, 60 * 1000 / bpm 
+    bm = new BeatMachine(bpm);
 
     stage = "practice";
     score = 0;
@@ -118,17 +117,17 @@ public class BeatGame {
     bMon = 12;
     
     // characters and monsters
-    yue = new Defender(interval, xYue, yYue, wYue, hYue, bPlayer);
-    zhu = new Warrior(interval, xZhu, yZhu, wZhu, hZhu, bPlayer);
-    shu = new Mage(interval, xShu, yShu, wShu, hShu, bPlayer);
+    yue = new Defender(bm.interval(), xYue, yYue, wYue, hYue, bPlayer);
+    zhu = new Warrior(bm.interval(), xZhu, yZhu, wZhu, hZhu, bPlayer);
+    shu = new Mage(bm.interval(), xShu, yShu, wShu, hShu, bPlayer);
     mon = new ArrayList<Monster>();
-    mon.add(new Monster(interval, xMon, yMon, wMon, hMon, bMon));
+    mon.add(new Monster(bm.interval(), xMon, yMon, wMon, hMon, bMon));
     
-    music.setLoopPoints(0, 120*interval);  //if 120 beats
+    music.setLoopPoints(0, 120*bm.interval());  //if 120 beats
     music.loop();
     int startTime = millis() - music.position();
     
-    bm = new BeatMachine(interval, startTime);
+    bm.setStartTime(startTime);
   }
 
   // main steps in draw()
@@ -139,7 +138,7 @@ public class BeatGame {
       onBeat();
     }
 
-    visual.show(bm.beatNum(), bm.phase(), interval);
+    visual.show(bm.beatNum(), bm.phase(), bm.interval());
 
     switch(stage) {
     case "practice":
@@ -169,7 +168,7 @@ public class BeatGame {
       // try to avoid respawn on beat
       if (mon.size() == 0) {
         if ((bm.beatNum() - beatClear) == monsInterval1) {
-          mon.add(new Monster(interval, xMon, yMon, wMon, hMon, bMon));
+          mon.add(new Monster(bm.interval(), xMon, yMon, wMon, hMon, bMon));
         }
       }
 
@@ -208,7 +207,7 @@ public class BeatGame {
       // try to avoid respawn on beat
       if (mon.size() == 0) {
         if ((bm.beatNum() - beatClear) == monsInterval2) {
-          mon.add(new Monster(interval, xMon, yMon, wMon, hMon, bMon));
+          mon.add(new Monster(bm.interval(), xMon, yMon, wMon, hMon, bMon));
         }
       }
 
@@ -237,17 +236,17 @@ public class BeatGame {
       text("Killed: " + score, 680, 720);
 
       if (orders[0] == "Heal") {
-        yue = new Defender(interval, xYue, yYue, wYue, hYue, bPlayer);
-        zhu = new Warrior(interval, xZhu, yZhu, wZhu, hZhu, bPlayer);
-        shu = new Mage(interval, xShu, yShu, wShu, hShu, bPlayer);
+        yue = new Defender(bm.interval(), xYue, yYue, wYue, hYue, bPlayer);
+        zhu = new Warrior(bm.interval(), xZhu, yZhu, wZhu, hZhu, bPlayer);
+        shu = new Mage(bm.interval(), xShu, yShu, wShu, hShu, bPlayer);
 
         stage = "practice";
         break;
       }
       if (orders[0] == "Attack") {
-        yue = new Defender(interval, xYue, yYue, wYue, hYue, bPlayer);
-        zhu = new Warrior(interval, xZhu, yZhu, wZhu, hZhu, bPlayer);
-        shu = new Mage(interval, xShu, yShu, wShu, hShu, bPlayer);
+        yue = new Defender(bm.interval(), xYue, yYue, wYue, hYue, bPlayer);
+        zhu = new Warrior(bm.interval(), xZhu, yZhu, wZhu, hZhu, bPlayer);
+        shu = new Mage(bm.interval(), xShu, yShu, wShu, hShu, bPlayer);
 
         score = 0;
         beatFight = bm.beatNum();
@@ -421,10 +420,10 @@ public class BeatGame {
   }
 
   void inputValues() {
-    int index = ((bm.currentTime() + interval/2) / interval) % 6;  //align to center
+    int index = ((bm.currentTime() + bm.interval()/2) / bm.interval()) % 6;  //align to center
 
     boolean onCycle = (index < 3);
-    boolean onBeat = (bm.phase() <= interval *1/3 || bm.phase() >= interval *2/3);  // true if on beat
+    boolean onBeat = (bm.phase() <= bm.interval() *1/3 || bm.phase() >= bm.interval() *2/3);  // true if on beat
     //boolean onBeat = true;
     // beatNum 0, 1, 2, (3, 4, 5)
     // when there is key there will be jump

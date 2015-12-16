@@ -14,14 +14,7 @@ public class BeatGame {
   // music characteristics
   int bpm;
   int interval;
-  int one_third;
-  int two_third;
-  
-  int latency;
-  int currentTime;
-  int phase;
-  int beatNum;  // boom = 0; cha = 1; cha = 2; act 3; act 4; act 5;
-  boolean beatIn;  // boom {beatIn (2/3), beatOff (1/3)}, cha {beatIn, beatOff}, cha {beatIn, beatOff}
+  BeatMachine bm;
 
   // input controls and vals (v2, multiple_key3)
   String[] orders;
@@ -81,6 +74,28 @@ public class BeatGame {
     mi_low = new Note(minim, "music/mi_low.mp3");
     sol_low = new Note(minim, "music/sol_low.mp3");
     
+    // global vals
+    bpm = 170;    // 180 with funny
+    interval = round(60000.0/bpm); // milliseconds, 60 * 1000 / bpm 
+
+    stage = "practice";
+    score = 0;
+    beatFight = 0;
+    beatsSurvive = 0;
+
+    // input
+    orders = new String[3];
+    beatJudges = new int[3];
+    for (int i = 0; i < 3; i++) {
+      orders[i] = "Null";
+      beatJudges[i] = 0;
+    }
+
+    // monster's order
+    monsOrder = "stay";    // stay, attack
+    monsInterval1 = 8;     // practice mode
+    monsInterval2 = 14;    // fight mode
+
     // creatures' parameters
     xYue = 466; 
     yYue = 489; 
@@ -101,33 +116,6 @@ public class BeatGame {
     wMon = 438*0.95; 
     hMon = 465*0.95;
     bMon = 12;
-
-    // global vals
-    bpm = 170;    // 180 with funny
-    interval = round(60000.0/bpm); // milliseconds, 60 * 1000 / bpm 
-    one_third = interval *1/3;
-    two_third = interval *2/3;
-    phase = 0;
-    beatNum = 0;
-    beatIn = true;
-
-    stage = "practice";
-    score = 0;
-    beatFight = 0;
-    beatsSurvive = 0;
-
-    // input
-    orders = new String[3];
-    beatJudges = new int[3];
-    for (int i = 0; i < 3; i++) {
-      orders[i] = "Null";
-      beatJudges[i] = 0;
-    }
-
-    // monster's order
-    monsOrder = "stay";    // stay, attack
-    monsInterval1 = 8;     // practice mode
-    monsInterval2 = 14;    // fight mode
     
     // characters and monsters
     yue = new Defender(interval, xYue, yYue, wYue, hYue, bPlayer);
@@ -138,22 +126,27 @@ public class BeatGame {
     
     music.setLoopPoints(0, 120*interval);  //if 120 beats
     music.loop();
-    latency = millis() - music.position();
+    int startTime = millis() - music.position();
+    
+    bm = new BeatMachine(interval, startTime);
   }
 
   // main steps in draw()
   void execute() {
     background(0);
-    beatCycle();
+    bm.step();
+    if (bm.flipping()) {
+      onBeat();
+    }
 
-    visual.show(beatNum, beatIn, phase, interval);
+    visual.show(bm.beatNum(), bm.phase(), interval);
 
     switch(stage) {
     case "practice":
       if (key == '2') {
         stage = "fight";
         score = 0;
-        beatFight = beatNum;
+        beatFight = bm.beatNum();
         break;
       }
 
@@ -163,26 +156,26 @@ public class BeatGame {
       }
 
       if (mon.size() > 0) {
-        mon.get(0).lifeCycle(beatNum, phase);
+        mon.get(0).lifeCycle(bm.beatNum(), bm.phase());
 
         if (!mon.get(0).isAlive()) {
           // ********** score here somehow ************//
           score ++;
           mon.remove(0);
-          beatClear = beatNum;
+          beatClear = bm.beatNum();
         }
       }
       // respawn the monster
       // try to avoid respawn on beat
       if (mon.size() == 0) {
-        if ((beatNum - beatClear) == monsInterval1) {
+        if ((bm.beatNum() - beatClear) == monsInterval1) {
           mon.add(new Monster(interval, xMon, yMon, wMon, hMon, bMon));
         }
       }
 
-      shu.lifeCycle(beatNum, phase);
-      zhu.lifeCycle(beatNum, phase);
-      yue.lifeCycle(beatNum, phase);
+      shu.lifeCycle(bm.beatNum(), bm.phase());
+      zhu.lifeCycle(bm.beatNum(), bm.phase());
+      yue.lifeCycle(bm.beatNum(), bm.phase());
 
       textSize(28);
       fill(0);
@@ -202,31 +195,31 @@ public class BeatGame {
       }
 
       if (mon.size() > 0) {
-        mon.get(0).lifeCycle(beatNum, phase);
+        mon.get(0).lifeCycle(bm.beatNum(), bm.phase());
 
         if (!mon.get(0).isAlive()) {
           // ********** score here somehow ************//
           mon.clear();
-          beatClear = beatNum;
+          beatClear = bm.beatNum();
           score ++;
         }
       }
       // respawn the monster
       // try to avoid respawn on beat
       if (mon.size() == 0) {
-        if ((beatNum - beatClear) == monsInterval2) {
+        if ((bm.beatNum() - beatClear) == monsInterval2) {
           mon.add(new Monster(interval, xMon, yMon, wMon, hMon, bMon));
         }
       }
 
-      shu.lifeCycle(beatNum, phase);
-      zhu.lifeCycle(beatNum, phase);
-      yue.lifeCycle(beatNum, phase);
+      shu.lifeCycle(bm.beatNum(), bm.phase());
+      zhu.lifeCycle(bm.beatNum(), bm.phase());
+      yue.lifeCycle(bm.beatNum(), bm.phase());
 
       textSize(28);
       fill(0);
 
-      beatsSurvive = beatNum - beatFight;
+      beatsSurvive = bm.beatNum() - beatFight;
       text("Beats survived: "+ beatsSurvive, 180, 720);
 
       text("Killed: " + score, 680, 720);
@@ -235,7 +228,7 @@ public class BeatGame {
 
     case "defeated":
       if (mon.size() > 0) {
-        mon.get(0).lifeCycle(beatNum, phase);
+        mon.get(0).lifeCycle(bm.beatNum(), bm.phase());
       }
 
       showOptions();    // heal = practice mode, attack = fight mode
@@ -257,7 +250,7 @@ public class BeatGame {
         shu = new Mage(interval, xShu, yShu, wShu, hShu, bPlayer);
 
         score = 0;
-        beatFight = beatNum;
+        beatFight = bm.beatNum();
 
         stage = "fight";
         break;
@@ -268,27 +261,10 @@ public class BeatGame {
   }
 
   //compute some music characteristics that control all visuals and characters
-  void beatCycle() {
-    currentTime = millis() - latency;
-    phase = currentTime % interval;
-    beatNum = currentTime / interval;
-
-    if (beatIn) {
-      if (phase >= two_third) {
-        beatIn = false;
-      }
-    } else {
-      if (phase < one_third) {  // on new beat 
-        beatIn = true;
-
-        onBeat();
-      }
-    }
-  }
 
   // call only once when status flipping
   void onBeat() {
-    int n = beatNum % 6;
+    int n = bm.n();
 
     // players' cycle
     if (stage != "defeated") {
@@ -434,6 +410,7 @@ public class BeatGame {
     if (key=='d' || key == 'd') {
       input = "defend";
     }
+    println(bm.currentTime());
     
     inputValues();
   }
@@ -444,10 +421,10 @@ public class BeatGame {
   }
 
   void inputValues() {
-    int index = ((currentTime + interval/2) / interval) % 6;  //align to center
+    int index = ((bm.currentTime() + interval/2) / interval) % 6;  //align to center
 
     boolean onCycle = (index < 3);
-    boolean onBeat = (phase <= one_third || phase >= two_third);  // true if on beat
+    boolean onBeat = (bm.phase() <= interval *1/3 || bm.phase() >= interval *2/3);  // true if on beat
     //boolean onBeat = true;
     // beatNum 0, 1, 2, (3, 4, 5)
     // when there is key there will be jump
@@ -555,17 +532,17 @@ public class Visual {
     }
   }
 
-  void show(int beatNum, boolean beatIn, int phase, int interval) {    
+  void show(int beatNum, int phase, int interval) {    
     // planet, quick fade in and slow fade out
     if (phase > 11*interval/12 && beatNum % 6 == 5) {
       tint(255, 126);
       image(imgPlanet, width/2, height/2);
       noTint();
     }
-    if (beatNum%6 == 0 || beatNum%6 == 1|| (beatNum%6 == 2 && beatIn)) {
+    if (beatNum%6 == 0 || beatNum%6 == 1|| (beatNum%6 == 2 && phase <= interval * 2/3)) {
       image(imgPlanet, width/2, height/2);
     } 
-    if ( (beatNum%6 == 2 && !beatIn)) {
+    if ( (beatNum%6 == 2 && phase > interval * 2/3)) {
       tint(255, 126);
       image(imgPlanet, width/2, height/2);
       noTint();
@@ -582,7 +559,7 @@ public class Visual {
       image(imgEyes, width/2, height/2);
       noTint();
     } else if (beatNum % 6 == 5) {
-      if (!beatIn) {
+      if (phase > interval * 2/3) {
         tint(255, 127);
         image(imgEyes, width/2, height/2);
         noTint();
@@ -590,7 +567,7 @@ public class Visual {
     }
 
     // grass
-    if (beatIn) {
+    if (phase <= interval * 2/3) {
       if (beatNum %3 == 0) {
         image(imgGrass[0], width/2, height/2);
       } else {

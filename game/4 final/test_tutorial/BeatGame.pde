@@ -60,7 +60,7 @@ public class BeatGame {
     visual = new Visual();
     
     // sound (Minim!!)
-    minim = new Minim(BoomChaCha.this);
+    minim = new Minim(test_tutorial.this);
     music = minim.loadFile("music/funny_170.mp3", 512);
     magic = minim.loadFile("music/magic.mp3", 512);
     swipe = minim.loadFile("music/swipe.mp3", 512);

@@ -311,8 +311,8 @@ public class BeatGame {
     if (stage == "fight" && mon.size() > 0 && mon.get(0).isAlive()) {    //beatNum > 24 && mon.get(0).alive
       if (n == 2) {
         if (monsOrder == "stay" && mon.get(0).currentState() == "stay") {
-          int mood = int(random(0, 1));
-          if (mood == 0) {
+          int mood = int(random(0, 2));
+          if (mood == 1) {
             monsOrder = "attack";
           } else {
             monsOrder = "stay";

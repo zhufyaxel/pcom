@@ -13,6 +13,7 @@ public class Tutorial_take_weapon {
     int bpm = 170;    // 180 with funny
     int musicBeats = 120;
     bgm = new BGM(path, bpm, musicBeats);
+    
     //Characters, x,y,w,h,blood
     imageMode(CENTER);
     yue = new Defender(bgm.interval(), 812, 450, 241*1.2, 388*1.2, 4);
@@ -21,6 +22,9 @@ public class Tutorial_take_weapon {
     yue.alive = false;
     zhu.alive = false;
     shu.alive = false;
+    yue.hideBlood(true);
+    zhu.hideBlood(true);
+    shu.hideBlood(true);
     bk = new BkgVisual();
     startBeat = 5;
   }

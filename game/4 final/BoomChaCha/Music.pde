@@ -4,11 +4,11 @@ class BGM {
 
   // parameters that can be called
   int interval;        // the length of a beat in milliseconds
-  int timePlayed;      // time played from music starts in milliseconds
+  int timePlayed;      // time played from music starts in milliseconds, elder currentTime
   int phase;           // the position inside a beat in millliseconds
-  int beatsPlayed;     // beats played
+  int beatsPlayed;     // beats played beatNum
   int n;               // 0-Boom, 1-Cha, 2-Cha, 3, 4, 5
-  boolean newBeatIn;   // when a new beat appears  
+  boolean newBeatIn;   // when a new beat appears  elder flippling
 
   // inner parameters for calculation
   int musicBeats;   // length of music in beats

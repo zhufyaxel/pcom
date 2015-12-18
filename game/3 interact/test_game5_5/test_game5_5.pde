@@ -12,16 +12,19 @@ String val;      // Data received from the serial port
 String portName = "/dev/cu.usbserial-AH01KCPQ";
 
 BeatGame game;
+tempatt atts;
 
 void setup() {
   // I need to setup the background
   size(1024, 768, P2D);
   //myPort = new Serial(this, portName, 9600);
   game = new BeatGame();
+  atts = new tempatt(760,450);
 }
 
 void draw() {
   game.execute();
+  atts.att();
 }
 
 void keyPressed() {

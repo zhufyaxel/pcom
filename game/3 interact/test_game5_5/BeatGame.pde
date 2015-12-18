@@ -60,8 +60,8 @@ public class BeatGame {
 
     // visual and music
     visual = new Visual();
-    music = new SoundFile(test_game5_4.this, "music/funny_slow_drum_mono.mp3");
-    sword = new SoundFile(test_game5_4.this, "music/sword_strike.mp3");
+    music = new SoundFile(test_game5_5.this, "music/funny_slow_drum_mono.mp3");
+    sword = new SoundFile(test_game5_5.this, "music/sword_strike.mp3");
     
     // characters and monsters
     yue = new Defender(466, 489, 241, 388, 3);
@@ -127,6 +127,9 @@ public class BeatGame {
       println(sum);
       if (orders[0] == "Attack" ) {
         println("Attack", sum);
+        //////////
+        //att(int(mon.get(0).x), int(mon.get(0).y));
+        atts.attstate = true;
         playerAttack(sum);
       }
       if (orders[0] == "Heal" ) {

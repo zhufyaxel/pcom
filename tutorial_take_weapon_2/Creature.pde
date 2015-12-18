@@ -20,7 +20,6 @@ public class Creature {
   boolean dying;
   int beatDying;
   
-  boolean hideBlood;
   int blood, maxBlood;
   PImage[] heart;
   float adjustX, adjustY;    // for blood positioning
@@ -48,7 +47,6 @@ public class Creature {
     dying = false;
     beatDying = -1;
     
-    hideBlood = false;
     maxBlood = _b;    // full heart displayed
     blood = 2*_b;   // allow for half heart
     adjustX = 0;
@@ -117,28 +115,26 @@ public class Creature {
   }
 
   void displayBlood() {
-    if (!hideBlood) {
-      int size = 30;
-      float currentX = x - float(maxBlood)/2 * size + size/2 + adjustX;
-      float currentY = y - h/2 - size/2 + adjustY;
-      for (int i = 0; i < maxBlood; i++) {
-        if (blood % 2 == 0) {
-          if (i < blood/2) {
-            image(heart[2], currentX, currentY, size, size);
-          } else {
-            image(heart[0], currentX, currentY, size, size);
-          }
+    int size = 30;
+    float currentX = x - float(maxBlood)/2 * size + size/2 + adjustX;
+    float currentY = y - h/2 - size/2 + adjustY;
+    for (int i = 0; i < maxBlood; i++) {
+      if (blood % 2 == 0) {
+        if (i < blood/2) {
+          image(heart[2], currentX, currentY, size, size);
         } else {
-          if (i < blood/2) {
-            image(heart[2], currentX, currentY, size, size);
-          } else if (i == blood/2) {
-            image(heart[1], currentX, currentY, size, size);
-          } else {
-            image(heart[0], currentX, currentY, size, size);
-          }
+          image(heart[0], currentX, currentY, size, size);
         }
-        currentX += size;
+      } else {
+        if (i < blood/2) {
+          image(heart[2], currentX, currentY, size, size);
+        } else if (i == blood/2) {
+          image(heart[1], currentX, currentY, size, size);
+        } else {
+          image(heart[0], currentX, currentY, size, size);
+        }
       }
+      currentX += size;
     }
   }
   
@@ -187,10 +183,6 @@ public class Creature {
   
   void setState(String _state) {
     state = _state;
-  }
-  
-  void hideBlood(boolean hide) {
-    hideBlood = hide;
   }
   
   void changeBlood(int num) {

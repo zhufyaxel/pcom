@@ -7,26 +7,26 @@ Serial myPort;  // Create object from Serial class
 String val;      // Data received from the serial port
 String portName = "/dev/cu.usbserial-AH01KCPQ";
 
-//BeatGame game;
-Tutorial_take_weapon tutorial1;
+BeatGame game;
+//Tutorial_take_weapon tutorial1;
 
 void setup() {
   // I need to setup the background
   size(1024, 768, P2D);
   // *** serial port available ***
   //myPort = new Serial(this, portName, 9600);
-  //game = new BeatGame();
-  tutorial1 = new Tutorial_take_weapon();
+  game = new BeatGame();
+  //tutorial1 = new Tutorial_take_weapon();
 }
 
 void draw() {
-  //game.execute();
-  tutorial1.execute();
+  game.execute();
+  //tutorial1.execute();
 }
 
-//void keyPressed() {
-//  game.myKeyPressed();
-//}
+void keyPressed() {
+  game.myKeyPressed();
+}
 
 //void serialEvent(Serial myPort) { 
 //  if ( myPort.available() > 0) {  // If data is available,

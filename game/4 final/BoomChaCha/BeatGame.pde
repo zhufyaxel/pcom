@@ -15,7 +15,11 @@ public class BeatGame {
   String[] orders;
   int[] beatJudges;
   int power;
+  
   String input;  //serial input or key input
+  boolean warriorCalled;
+  boolean mageCalled;
+  boolean defenderCalled;
 
   // monster's orders
   String monsOrder;
@@ -89,6 +93,10 @@ public class BeatGame {
       orders[i] = "Null";
       beatJudges[i] = 0;
     }
+    
+    warriorCalled = false;
+    mageCalled = false;
+    defenderCalled = false;
 
     // monster's order
     monsOrder = "stay";    // stay, attack
@@ -261,6 +269,7 @@ public class BeatGame {
 
     // players' cycle
     if (stage != "defeated") {
+      
       if (n == 3) {
         power = beatJudges[0] + beatJudges[1] + beatJudges[2];
         //power = 6;
@@ -288,11 +297,15 @@ public class BeatGame {
           //playerDefend(power);  // see monsterattack
         }
       }
+      
       if (n == 4) {
         for (int i = 0; i < 3; i++) {
           orders[i] = "Null";
           beatJudges[i] = 0;
         }
+        mageCalled = false;
+        warriorCalled = false;
+        defenderCalled = false;
       }
 
       if (n == 5 && shu.currentState() == "heal") {
@@ -424,18 +437,23 @@ public class BeatGame {
 
     if (input == "wand") {
       input = "";
-      shu.jump(onCycle && onBeat);
+      shu.jump(onCycle && onBeat && !mageCalled);  // only when the three are true, then can the character jump high
+      
       if (onCycle) {    // beatNum % 6 < 3 || beatNum == 5, because some may hit before the first beat
         if (onBeat) {
           dol.play();
         } else {
           dol_low.play();
         }
-        if (orders[index] == "Null") {
+        
+        if (orders[index] == "Null" && !mageCalled) {        
+          orders[index] = "Heal";
+          mageCalled = true;
+          
           if (index == 0) {
             shu.addArrow();
           }          
-          orders[index] = "Heal";
+          
           if (onBeat) {
             beatJudges[index] = 2;
           } else {
@@ -445,20 +463,26 @@ public class BeatGame {
         }
       }
     }
+    
     if (input == "swipe") {
       input = "";
-      zhu.jump(onCycle && onBeat);
+      zhu.jump(onCycle && onBeat && !warriorCalled);  // only when the three are true, then can the character jump high
+      
       if (onCycle) {    // beatNum % 6 < 3 || beatNum == 5, because some may hit before the first beat
         if (onBeat) {
           sol.play();
         } else {
           sol_low.play();
         } 
-        if (orders[index] == "Null") {
+        
+        if (orders[index] == "Null" && !warriorCalled) {
+          orders[index] = "Attack";
+          warriorCalled = true;
+          
           if (index == 0) {
             zhu.addArrow();
           }
-          orders[index] = "Attack";
+
           if (onBeat) {
             beatJudges[index] = 2;
           } else {
@@ -468,20 +492,24 @@ public class BeatGame {
         }
       }
     }
+    
     if (input == "defend") {
       input = "";
-      yue.jump(onCycle && onBeat);
+      yue.jump(onCycle && onBeat && !defenderCalled);  // only when the three are true, then can the character jump high
       if (onCycle) {    // beatNum % 6 < 3 || beatNum == 5, because some may hit before the first beat
         if (onBeat) {
           mi.play();
         } else {
           mi_low.play();
         } 
-        if (orders[index] == "Null") {
+        if (orders[index] == "Null" && !defenderCalled) {
+          orders[index] = "Defend";
+          defenderCalled = true;
+          
           if (index == 0) {
             yue.addArrow();
           }
-          orders[index] = "Defend";
+
           if (onBeat) {
             beatJudges[index] = 2;
           } else {
@@ -491,6 +519,7 @@ public class BeatGame {
         }
       }
     }
+    
   }
 
   // for practice purpose, slowly kill yourself

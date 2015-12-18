@@ -279,7 +279,6 @@ public class BeatGame {
           swipe.cue(100);
           swipe.play();
           zhu.setState("attack");
-          zhu.removeArrow();
           playerAttack(power);
           println("Attack", power);
         }
@@ -287,12 +286,10 @@ public class BeatGame {
           magic.rewind();
           magic.play();
           shu.setState("heal");
-          shu.removeArrow();
           println("Heal", power);
         }
         if (orders[0] == "Defend" ) {
           yue.setState("defend");
-          yue.removeArrow();
           println("Defend", power);
           //playerDefend(power);  // see monsterattack
         }
@@ -306,10 +303,18 @@ public class BeatGame {
         mageCalled = false;
         warriorCalled = false;
         defenderCalled = false;
+        zhu.removeBoom();
+        shu.removeBoom();
+        yue.removeBoom();
+        zhu.removeCha();
+        shu.removeCha();
+        yue.removeCha();        
       }
 
-      if (n == 5 && shu.currentState() == "heal") {
-        playerHeal(power);
+      if (n == 5) {
+        if (shu.currentState() == "heal") {
+          playerHeal(power);
+        }
       }
     }
 
@@ -450,9 +455,14 @@ public class BeatGame {
           orders[index] = "Heal";
           mageCalled = true;
           
-          if (index == 0) {
-            shu.addArrow();
-          }          
+          switch(index) {
+            case 0:
+              shu.addBoom();
+              break;
+            case 1: case 2:
+              shu.addCha();
+              break;
+          }
           
           if (onBeat) {
             beatJudges[index] = 2;
@@ -479,8 +489,13 @@ public class BeatGame {
           orders[index] = "Attack";
           warriorCalled = true;
           
-          if (index == 0) {
-            zhu.addArrow();
+          switch(index) {
+            case 0:
+              zhu.addBoom();
+              break;
+            case 1: case 2:
+              zhu.addCha();
+              break;
           }
 
           if (onBeat) {
@@ -506,8 +521,13 @@ public class BeatGame {
           orders[index] = "Defend";
           defenderCalled = true;
           
-          if (index == 0) {
-            yue.addArrow();
+          switch(index) {
+            case 0:
+              yue.addBoom();
+              break;
+            case 1: case 2:
+              yue.addCha();
+              break;
           }
 
           if (onBeat) {

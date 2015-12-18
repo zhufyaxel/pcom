@@ -78,8 +78,11 @@ public class Player extends Creature {
         image(stay[n], x, y, w, h);
       } 
       
-      if (showArrow) {
-        image(arrow, x - 10 + adjustX, y + h/2  - 140 + adjustY);
+      if (showBoom) {
+        image(boom, x - 10 + adjustX, y + h/2  - 140 + adjustY);
+      }
+      if (showCha) {
+        image(cha, x - 10 + adjustX, y + h/2  - 140 + adjustY);
       }
       
       displayBlood();

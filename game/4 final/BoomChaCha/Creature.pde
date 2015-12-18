@@ -25,8 +25,11 @@ public class Creature {
   PImage[] heart;
   float adjustX, adjustY;    // for blood positioning
 
-  boolean showArrow;
-  PImage arrow;
+  boolean showBoom;
+  PImage boom;
+  
+  boolean showCha;
+  PImage cha;
 
   // they should have existence: position and size
   float x, y, w, h;  
@@ -63,8 +66,10 @@ public class Creature {
     heart[1] = loadImage("images/heart/heart_half.png");
     heart[2] = loadImage("images/heart/heart_full.png");
     
-    showArrow = false;
-    arrow = loadImage("images/status/arrow.png");
+    showBoom = false;
+    boom = loadImage("images/status/Boom.png");
+    showBoom = false;
+    cha = loadImage("images/status/Cha.png");
 
     x = _x;
     y = _y;
@@ -93,12 +98,20 @@ public class Creature {
     }
   }
   
-  void addArrow() {
-    showArrow = true;
+  void addBoom() {
+    showBoom = true;
   }
   
-  void removeArrow() {
-    showArrow = false;
+  void removeBoom() {
+    showBoom = false;
+  }
+  
+  void addCha() {
+    showCha = true;
+  }
+  
+  void removeCha() {
+    showCha = false;
   }
   
   void displayAttack() {

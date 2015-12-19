@@ -161,7 +161,7 @@ public class Tutorial_take_weapon {
       if (orders[0] == "Attack" && orders[1] == "Heal" && orders[2] == "Defend") {
         feedback = "Correct";
       } else {
-        feedback = "Fuck you Wrong";
+        feedback = "Try Again";
       }
     }
     // players' cycle

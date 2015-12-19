@@ -16,17 +16,25 @@ public class Tutorial_attack {
   Note dol_low, mi_low, sol_low;
   //something for judgement
   int startBeat;
+  int beats;// for counting the stage beats;
   String input;
 
   String feedback;
-
+  ///player's order
   String[] orders;
   int[] beatJudges;
+  int power;
   boolean warriorCalled = false;
   boolean mageCalled = false;
   boolean defenderCalled = false;
+  ///Monster's order
+  String monsOrder;
+  int beatClear;    // time when clear up the monster
+  int monsInterval1, monsInterval2;  // gap between a new monster respawn
 
-  boolean pass;
+  boolean after_initial = false;
+  boolean pass = false;
+  int cons_beat;// for change the construction if it is too long;
 
   Tutorial_attack() {
     // input
@@ -38,12 +46,15 @@ public class Tutorial_attack {
     }
     //Characters, x,y,w,h,blood
     // creatures' parameters
-   
+
     imageMode(CENTER);
     yue = new Defender(bgm.interval(), 466, 489, 241*0.95, 388*0.95, 4);
     zhu = new Warrior(bgm.interval(), 285, 489, 226*0.95, 388*0.95, 4);
     shu = new Mage(bgm.interval(), 139, 489, 225*0.95, 388*0.95, 4);
-    mon = new Monster(bgm.interval(), 760, 450, 438*0.95, 465*0.95, 12);   
+    mon = new Monster(bgm.interval(), 760, 450, 438*0.95, 465*0.95, 12);
+    monsOrder = "stay";    // stay, attack
+    monsInterval1 = 8;     // practice mode
+    monsInterval2 = 14;    // fight mode
 
     sword = new Sword_2();
     wand = new Wand_2();
@@ -75,91 +86,80 @@ public class Tutorial_attack {
 
   void execute() {
     bk.display(bgm.beatsPlayed(), bgm.phase, bgm.interval);
-    if (bgm.beatsPlayed() - startBeat >= 3 && bgm.newBeatIn() && !shu.alive) {
-      shu.alive = true;
-      shu.jump(true);
-      //myport.write()
-    }
-    if (bgm.beatsPlayed() - startBeat == 6 && bgm.newBeatIn()) {
-      zhu.alive = true;
-      zhu.jump(true);
-      bk.text = "Characters are Coresponding to Weapons";
-    }
-    if (bgm.beatsPlayed() - startBeat == 9 && bgm.newBeatIn()) {
-      yue.alive = true;
-      yue.jump(true);
-    }
     bgm.step();
     shu.lifeCycle(bgm.beatsPlayed(), bgm.phase());
     zhu.lifeCycle(bgm.beatsPlayed(), bgm.phase());
     yue.lifeCycle(bgm.beatsPlayed(), bgm.phase());
-    if (bgm.beatsPlayed() - startBeat == 15) {
-      bk.text = "Move with ICONS on rythm";
+    mon.lifeCycle(bgm.beatsPlayed(), bgm.phase());
+    beats = bgm.beatsPlayed() - startBeat;
+    if (beats < 6) {
+      bk.text = "Enemy comes, let's learn attack";
     }
-    //Actually that is the Scene2, for convience I merged these two Scene together
-    if (bgm.beatsPlayed() - startBeat >= 15 && !pass) {
+    if (beats >6 && beats < 18) {
+      bk.text = "If Worrier sway sword on 'Boom', the team will attack";
+    }
+    if (beats >18 && beats < 30) {
+      bk.text = "Other two do 'Cha Cha' will power-up the attack";
+    }
+    if (beats > 30) {
+      after_initial = true;
+    }
+    //during 
+    if (beats > 6 && !pass) {
       if (bgm.newBeatIn()) {
         onBeat();
       }
-      if (bgm.n >= 3 && bgm.n <=4) {
-        text(feedback, width/2, height/2);
-      }
-      if (bgm.n == 5) {
-        if (bgm.phase() > bgm.interval() * 2 / 3) {
-          sword.display(0);
-        }
-      }
-      if (bgm.n == 0) {
-        if (bgm.phase() < bgm.interval() / 4) {
-          sword.display(1);
-        }
-        if (bgm.phase() < bgm.interval() / 2 && bgm.phase() > bgm.interval() /4) {
-          sword.display(2);
-        }
-        if (bgm.phase() > bgm.interval() *3/4) {
-          wand.display(0);
-        }
-      }
-      if (bgm.n == 1) {
-        if (bgm.phase() < bgm.interval() / 4) {
-          wand.display(1);
-        }
-        if (bgm.phase() < bgm.interval() / 2 && bgm.phase() > bgm.interval() /4) {
-          wand.display(2);
-        }
-        if (bgm.phase() > bgm.interval() *3/4) {
-          sheild.display(0);
-        }
-      }
-      if (bgm.n == 2) {
-        if (bgm.phase() < bgm.interval() / 4) {
-          sheild.display(1);
-        }
-        if (bgm.phase() < bgm.interval() / 2 && bgm.phase() > bgm.interval() /4) {
-          sheild.display(2);
-        }
-      }
-      ///Change the words whith certain time
-      if ((bgm.beatsPlayed() - startBeat) % 18 == 0) {
-        bk.text = "Move with ICONS on rythm";
-      }
-      if ((bgm.beatsPlayed() - startBeat) % 18 == 6) {
-        bk.text = "Notice the rythm and shining of the monster";
-      }
-      if ((bgm.beatsPlayed() - startBeat) % 18 == 12) {
-        bk.text = "That's the sigh for Excute Boom!Cha!Cha!";
-      }
     }
+    //Actually that is the Scene2, for convience I merged these two Scene together
+    //if (bgm.beatsPlayed() - startBeat >= 15 && !pass) {
+    //  if (bgm.newBeatIn()) {
+    //    onBeat();
+    //  }
+
+    //  if (bgm.n >= 3 && bgm.n <=4) {
+    //    text(feedback, width/2, height/2);
+    //  }
+    //  if (bgm.n == 5) {
+    //    if (bgm.phase() > bgm.interval() * 2 / 3) {
+    //      sword.display(0);
+    //    }
+    //  }
   }
 
   void onBeat() {
-
     int n = bgm.n();
+    if (n == 1) {
+      if (beats%12 == 0) {
+        bk.text = "Try to beat your enemy";
+      }
+    }
     if (n == 3) {
-      if (orders[0] == "Attack" && orders[1] == "Heal" && orders[2] == "Defend") {
-        feedback = "Correct";
+      if (orders[0] == "Attack") {
+        power = beatJudges[0] + beatJudges[1] + beatJudges[2];
+        //power = 6;
+        if (orders[0] == "Attack" ) {
+          //zhu.jump(true);
+          swipe.rewind();
+          swipe.cue(100);
+          swipe.play();
+          zhu.setState("attack");
+          playerAttack(power);
+          println("Attack", power);
+          if (after_initial) {
+            if (beatJudges[0] != 0 && beatJudges[1] != 0 && beatJudges[2] != 0) {
+              bk.text = "Excellent Attack!";
+              bk.excellent = true;
+            } else {
+              bk.text = "Good Attack! Trying to make 'Cha Cha' for supportance";
+              bk.good = true;
+            }
+          }
+        }
       } else {
-        feedback = "Fuck you Wrong";
+        if (after_initial) {
+          bk.text = null;
+          bk.try_again = true;
+        }
       }
     }
     // players' cycle
@@ -178,6 +178,12 @@ public class Tutorial_attack {
       shu.removeCha();
       yue.removeCha();
     }
+    if (n == 5) {
+      bk.excellent = false;
+      bk.good = false;
+      bk.try_again = false;
+    }
+    /// change the words
   }
 
 
@@ -313,7 +319,12 @@ public class Tutorial_attack {
       }
     }
   }
+  void playerAttack(int power) {
+
+    mon.blood -= power;
+  }
 }
+
 
 
 public class Sword_2 {
@@ -362,17 +373,28 @@ public class Sheild_2 {
 public class BkgVisual_2 {
   PImage imgBkg;
   PImage imgEyes;
+  PImage Construction;
+  PImage Excellent;
+  PImage Good;
+  PImage Try_again;
   // words
   String text;
   PFont aw;
   PImage pots[];
-  //  PImage[] shadow;//0 for wand, 1 for sword, 2 for sheild
-  //  boolean[] shadowExist;
+  // booleans for feedback
+  boolean excellent = false;
+  boolean good = false;
+  boolean try_again = false;
+
   BkgVisual_2() {
     imgBkg = loadImage("images/Tutorial_take_weapon/background.png");
     imgEyes = loadImage("images/Tutorial_take_weapon/blinking eye.png");
+    Construction = loadImage("images/Tutorial_attack/t4.png");
+    Excellent = loadImage("images/Tutorial_attack/excellent.png");
+    Good = loadImage("images/Tutorial_attack/good.png");
+    Try_again = loadImage("images/Tutorial_attack/try again.png");
     text = "Welcome to Boom!Cha!Cha!";
-    aw = createFont("Comic Sans MS Bold.ttf", 32);
+    aw = createFont("Comic Sans MS Bold.ttf", 28);
     pots = new PImage[6];
     for (int i = 0; i < 6; i++) {
       pots[i] = loadImage("images/Tutorial_take_weapon/pots"+i+".png");
@@ -398,11 +420,24 @@ public class BkgVisual_2 {
       }
     }
     image(pots[beatNum % 6], width/2, height/2);
+    if (text != null) {
+      textAlign(CENTER);
+      textFont(aw);
+      fill(0);
+      text(text, width/2, 70);
+    } else {
+      image(Construction, width/2, height/2);
+    }
 
-    textAlign(CENTER);
-    textFont(aw);
-    fill(0);
-    text(text, width/2, 70);
+    if (excellent) {
+      image(Excellent, width/2, height/2);
+    }
+    if (good) {
+      image(Good, width/2, height/2);
+    }
+    if (try_again) {
+      image(Try_again, width/2, height/2);
+    }
 
 
     // shadows

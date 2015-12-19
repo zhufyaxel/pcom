@@ -7,10 +7,10 @@ public class Tutorial_take_weapon {
   // Guide_Content
   Sword sword;
   Wand wand;
-  Sheild sheild;
+  Shield shield;
   // sound
   Minim minim;
-  AudioPlayer magic, swipe, shield;
+  AudioPlayer magic, swipe, defence;
   Note dol, mi, sol;
   Note dol_low, mi_low, sol_low;
   //something for judgement
@@ -49,14 +49,14 @@ public class Tutorial_take_weapon {
 
     sword = new Sword();
     wand = new Wand();
-    sheild = new Sheild();
+    shield = new Shield();
     bk = new BkgVisual();
     startBeat = bgm.beatsPlayed();
     // sound (Minim!!)
     minim = new Minim(Game_with_tutorial.this);
     magic = minim.loadFile("music/magic.mp3", 512);
     swipe = minim.loadFile("music/swipe.mp3", 512);
-    shield = minim.loadFile("music/shield.mp3", 512);
+    defence = minim.loadFile("music/shield.mp3", 512);
 
     dol = new Note(minim, "music/dol.mp3");
     mi = new Note(minim, "music/mi.mp3");
@@ -77,6 +77,7 @@ public class Tutorial_take_weapon {
 
   void execute() {
     bk.display(bgm.beatsPlayed(), bgm.phase, bgm.interval);
+    println(bgm.beatsPlayed());
     if (bgm.beatsPlayed() - startBeat >= 3 && bgm.newBeatIn() && !shu.alive) {
       shu.alive = true;
       shu.jump(true);
@@ -130,15 +131,15 @@ public class Tutorial_take_weapon {
           wand.display(2);
         }
         if (bgm.phase() > bgm.interval() *3/4) {
-          sheild.display(0);
+          shield.display(0);
         }
       }
       if (bgm.n == 2) {
         if (bgm.phase() < bgm.interval() / 4) {
-          sheild.display(1);
+          shield.display(1);
         }
         if (bgm.phase() < bgm.interval() / 2 && bgm.phase() > bgm.interval() /4) {
-          sheild.display(2);
+          shield.display(2);
         }
       }
       ///Change the words whith certain time
@@ -346,9 +347,9 @@ public class Wand {
   }
 }
 
-public class Sheild {
+public class Shield {
   PImage pics[];
-  Sheild() {
+  Shield() {
     pics = new PImage[3];
     for (int i = 0; i < 3; i++) {
       pics[i] = loadImage("images/Tutorial_take_weapon/animation/dun/d"+(i+1)+".png");
@@ -368,7 +369,7 @@ public class BkgVisual {
   String text;
   PFont aw;
   PImage pots[];
-  //  PImage[] shadow;//0 for wand, 1 for sword, 2 for sheild
+  //  PImage[] shadow;//0 for wand, 1 for sword, 2 for shield
   //  boolean[] shadowExist;
   BkgVisual() {
     imgBkg = loadImage("images/Tutorial_take_weapon/background.png");

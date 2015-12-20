@@ -36,6 +36,7 @@ public class Tutorial_attack {
   int monsInterval1, monsInterval2;  // gap between a new monster respawn
 
   boolean after_initial = false;
+  boolean enablePass = false;
   boolean pass = false;
   int cons_beat;// for change the instruction if it is too long;
 
@@ -55,7 +56,7 @@ public class Tutorial_attack {
     yue = new Defender(bgm.interval(), 466, 489, 241*0.95, 388*0.95, 4);
     zhu = new Warrior(bgm.interval(), 285, 489, 226*0.95, 388*0.95, 4);
     shu = new Mage(bgm.interval(), 139, 489, 225*0.95, 388*0.95, 4);
-    mon = new Monster(bgm.interval(), 760, 450, 438*0.95, 465*0.95, 12);
+    mon = new Monster(bgm.interval(), 760, 450, 438*0.95, 465*0.95, 15);
     monsOrder = "stay";    // stay, attack
     monsInterval1 = 8;     // practice mode
     monsInterval2 = 14;    // fight mode
@@ -66,7 +67,7 @@ public class Tutorial_attack {
     bk = new BkgVisual_attack();
     startBeat = bgm.beatsPlayed();
     // sound (Minim!!)
-    minim = new Minim(Game_with_tutorial.this);
+    minim = new Minim(BoomChaCha.this);
     magic = minim.loadFile("music/magic.mp3", 512);
     swipe = minim.loadFile("music/swipe.mp3", 512);
     defence = minim.loadFile("music/shield.mp3", 512);
@@ -89,21 +90,42 @@ public class Tutorial_attack {
 
   void execute() {
     bk.display(bgm.beatsPlayed(), bgm.phase, bgm.interval);
+    beats = bgm.beatsPlayed() - startBeat;
+
     shu.lifeCycle(bgm.beatsPlayed(), bgm.phase());
     zhu.lifeCycle(bgm.beatsPlayed(), bgm.phase());
     yue.lifeCycle(bgm.beatsPlayed(), bgm.phase());
     mon.lifeCycle(bgm.beatsPlayed(), bgm.phase());
-    beats = bgm.beatsPlayed() - startBeat;
-    if (beats < 6) {
-      bk.text = "Enemy comes, let's learn attack";
-    }
-    if (beats >6 && beats < 18) {
-      bk.text = "If Worrier sway sword on 'Boom', the team will attack";
-    }
-    if (beats >18 && beats < 30) {
-      bk.text = "Other two do 'Cha Cha' will power-up the attack";
-    }
-    if (beats > 30) {
+
+    // initial stage
+    if (beats <= 60) {
+      bk.text = "Tutorial 3 of 5: Powerful Attack";
+      fill(0, 0, 0, 200);
+      noStroke();
+      rectMode(CENTER);
+      rect(width/2, height/2 + 48, width, height - 96);
+      if (beats < 12) {
+        fill(255);
+        text("Enemy shows up! Let's learn attack.", width/2, height/2) ;
+      } else if (beats < 24) {
+        fill(255);
+        text("Sway the sword on 'Boom', then you can do attack.", width/2, height/2);
+      } else if (beats < 36) {
+        fill(255);
+        text("As you learned, ", width/2, height/2 - 40);
+        text("if sword is followed by 'Cha Cha', ", width/2, height/2);
+        text("it will become more powerful.", width/2, height/2 + 40);
+      } else if (beats < 48) {
+        fill(255);
+        text("The more assists, the more powerful.", width/2, height/2);
+      } else if (beats < 60) {
+        fill(255);
+        text("Now, beat the enemy hard with BoomChaCha!", width/2, height/2);
+      }
+    } 
+    // players turn
+    else {
+      bk.text = null;
       after_initial = true;
     }
     //during 
@@ -112,55 +134,50 @@ public class Tutorial_attack {
         onBeat();
       }
     }
-    //Actually that is the Scene2, for convience I merged these two Scene together
-    //if (bgm.beatsPlayed() - startBeat >= 15 && !pass) {
-    //  if (bgm.newBeatIn()) {
-    //    onBeat();
-    //  }
-
-    //  if (bgm.n >= 3 && bgm.n <=4) {
-    //    text(feedback, width/2, height/2);
-    //  }
-    //  if (bgm.n == 5) {
-    //    if (bgm.phase() > bgm.interval() * 2 / 3) {
-    //      sword.display(0);
-    //    }
-    //  }
+    
+    // end
+    if (!mon.alive) {
+      enablePass = true;
+      bk.showGot = true;
+      bk.text_mid = "Well done!";
+    }
   }
 
   void onBeat() {
     int n = bgm.n();
-    if (n == 1) {
-      if (beats%12 == 0) {
-        bk.text = "Try to beat your enemy";
-      }
+    if (n == 2) {
+      // clear text
+      bk.text_mid = null;
     }
+    
     if (n == 3) {
+      // get feedback
       if (orders[0] == "Attack") {
         power = beatJudges[0] + beatJudges[1] + beatJudges[2];
         //power = 6;
-        if (orders[0] == "Attack" ) {
-          //zhu.jump(true);
-          swipe.rewind();
-          swipe.cue(100);
-          swipe.play();
-          zhu.setState("attack");
-          playerAttack(power);
-          println("Attack", power);
-          if (after_initial) {
-            if (beatJudges[0] != 0 && beatJudges[1] != 0 && beatJudges[2] != 0) {
-              bk.text = "Excellent Attack!";
-              bk.excellent = true;
-            } else {
-              bk.text = "Good Attack! Trying to make 'Cha Cha' for supportance";
-              bk.good = true;
-            }
-          }
+        //zhu.jump(true);
+        swipe.rewind();
+        swipe.cue(100);
+        swipe.play();
+        zhu.setState("attack");
+        playerAttack(power);
+        println("Attack", power);
+        if (beatJudges[0] != 0 && beatJudges[1] != 0 && beatJudges[2] != 0) {
+          bk.text_mid = "Excellent Attack!";
+          bk.excellent = true;
+        } else {
+          bk.text_mid = "Good! Assist with more 'Cha'";
+          bk.good = true;
         }
+      } else if (orders[0] != "Null") {
+        bk.text_mid = "Try to start 'Boom' with sword to make an attack.";
+        bk.try_again = true;
       } else {
-        if (after_initial) {
-          bk.text = null;
+        if (beatJudges[1] != 0 || beatJudges[2] != 0) {
+          bk.text_mid = "Try to make a 'Boom' with sword.";
           bk.try_again = true;
+        } else {
+          // no input, do nothing
         }
       }
     }
@@ -190,25 +207,35 @@ public class Tutorial_attack {
 
 
   void myKeyInput() {
-    if (key=='a' || key == 'A') {
-      input = "wand";
-    }
-    if (key=='s' || key == 'S') {
-      input = "swipe";
-    }
-    if (key=='d' || key == 'd') {
-      input = "defend";
-    }
+    if (after_initial) {
+      if (key=='a' || key == 'A') {
+        input = "wand";
+      }
+      if (key=='s' || key == 'S') {
+        input = "swipe";
+      }
+      if (key=='d' || key == 'd') {
+        input = "defend";
+      }
 
-    inputValues();
+      inputValues();
+    }
   }
 
   void myPortInput(String _input) {
-    input = _input;
-    inputValues();
+    if (after_initial) {
+      input = _input;
+      inputValues();
+    }
   }
 
   void inputValues() {
+    if (enablePass) {
+      if (input == "swipe") {
+        pass = true;
+      }
+    }
+    
     int index = ((bgm.timePlayed() + bgm.interval()/2) / bgm.interval()) % 6;  //align to center
 
     boolean onCycle = (index < 3);
@@ -333,12 +360,12 @@ public class BkgVisual_attack extends BkgVisual {
   PImage Good;
   PImage Try_again;
   PImage boom, cha;
-  
+
   // booleans for feedback
   boolean excellent = false;
   boolean good = false;
   boolean try_again = false;
-  
+
   BkgVisual_attack() {
     super();
     Instruction = loadImage("images/Tutorial_attack/t4.png");
@@ -347,15 +374,21 @@ public class BkgVisual_attack extends BkgVisual {
     Try_again = loadImage("images/Tutorial_attack/try again.png");
     boom = loadImage("images/status/Boom.png");
     cha = loadImage("images/status/Cha.png");
+    text_mid_y = 240;
   }
-  
+
   void display(int beatNum, int phase, int interval) {
     super.display(beatNum, phase, interval);
-    
-    // Instructions
+
     if (text == null) {
+      // Instructions
+      fill(255);
+      noStroke();
+      rectMode(CENTER);
+      rect(width/2, 50, width, 100);
       image(Instruction, width/2, height/2);
-    }
+    } 
+
     if (excellent) {
       image(Excellent, width/2, height/2);
     }
@@ -365,118 +398,20 @@ public class BkgVisual_attack extends BkgVisual {
     if (try_again) {
       image(Try_again, width/2, height/2);
     }
-    
+
     // Boom Cha Cha
     if (phase < interval * 2/3) {
-     switch(beatNum % 6) {
-       case 0:
-         image(boom, 100, 200);
-         break;
-       case 1:
-         image(cha, 100, 200);
-         break;
-       case 2:
-         image(cha, 100, 200);
-         break;
-     }
+      switch(beatNum % 6) {
+      case 0:
+        image(boom, 100, 300);
+        break;
+      case 1:
+        image(cha, 100, 300);
+        break;
+      case 2:
+        image(cha, 100, 300);
+        break;
+      }
     }
-
   }
 }
-
-//public class BkgVisual_attack {
-//  PImage imgBkg;
-//  PImage imgEyes;
-
-//  // words
-//  String text;
-//  PFont aw;
-//  PImage pots[];
-//  //
-//  PImage border;
-
-
-
-//  BkgVisual_attack() {
-//    imgBkg = loadImage("images/Tutorial_take_weapon/background.png");
-//    imgEyes = loadImage("images/Tutorial_take_weapon/blinking eye.png");
-
-//    text = "Welcome to Boom!Cha!Cha!";
-//    aw = createFont("Comic Sans MS Bold.ttf", 28);
-//    pots = new PImage[6];
-//    for (int i = 0; i < 6; i++) {
-//      pots[i] = loadImage("images/Tutorial_take_weapon/pots"+i+".png");
-//    }
-
-//    border = loadImage("images/border.png");
-//  }
-
-//  void display(int beatNum, int phase, int interval) {     
-//    // trees
-//    image(imgBkg, width/2, height/2); 
-//    // eyes
-//    if (beatNum % 6 <= 1 ) {
-//      image(imgEyes, width/2, height/2);
-//    } else if (beatNum % 6 == 2) {
-//      tint(255, 170);
-//      image(imgEyes, width/2, height/2);
-//      noTint();
-//    } else if (beatNum % 6 == 5) {
-//      if (phase > interval * 2/3) {
-//        tint(255, 127);
-//        image(imgEyes, width/2, height/2);
-//        noTint();
-//      }
-//    }
-//    image(pots[beatNum % 6], width/2, height/2);
-
-//    //// Boom Cha Cha
-//    //if (phase < interval * 2/3) {
-//    //  switch(beatNum % 6) {
-//    //    case 0:
-//    //      image(boom, 100, 200);
-//    //      break;
-//    //    case 1:
-//    //      image(cha, 100, 200);
-//    //      break;
-//    //    case 2:
-//    //      image(cha, 100, 200);
-//    //      break;
-//    //  }
-//    //}
-
-//    if (beatNum % 6 < 2 || (beatNum % 6 == 2 && phase <= interval/2)) {
-//      tint(255, 200);
-//      image(border, width/2, height/2);
-//      noTint();
-//    }
-//    if (beatNum % 6 == 2 && phase > interval / 2) {
-//      int alpha = round(map(phase, interval/2, interval, 200, 128));
-//      tint(255, alpha);
-//      image(border, width/2, height/2);
-//      noTint();
-//    }
-
-//    if (text != null) {
-//      textAlign(CENTER);
-//      textFont(aw);
-//      fill(0);
-//      text(text, width/2, 70);
-//    } else {
-//      image(Instruction, width/2, height/2);
-//    }
-
-//    if (excellent) {
-//      image(Excellent, width/2, height/2);
-//    }
-//    if (good) {
-//      image(Good, width/2, height/2);
-//    }
-//    if (try_again) {
-//      image(Try_again, width/2, height/2);
-//    }
-
-
-//    // shadows
-//  }
-//}

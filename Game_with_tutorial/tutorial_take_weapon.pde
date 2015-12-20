@@ -7,7 +7,7 @@ class Tutorial_take_weapon {
   int beatShow;  // when characters appear
 
   //Visual part
-  BkgVisual bk;
+  BkgVisual_take_weapon bk;
   Defender yue;
   Warrior zhu;
   Mage shu;
@@ -60,8 +60,7 @@ class Tutorial_take_weapon {
     sword = new Sword();
     wand = new Wand();
     shield = new Shield();
-    bk = new BkgVisual();
-    bk.text = "Tutorial 1 of 5: weapons and jobs";
+    bk = new BkgVisual_take_weapon();
 
     // sound (Minim!!)
     minim = new Minim(Game_with_tutorial.this);
@@ -87,8 +86,7 @@ class Tutorial_take_weapon {
   //  pass = false;
   //}
 
-  void execute(BGM _bgm) {
-    bgm = _bgm;
+  void execute() {
     bk.display(bgm.beatsPlayed(), bgm.phase, bgm.interval);
 
     if (bgm.newBeatIn()) {
@@ -207,6 +205,7 @@ public class Shield {
  }
 }
 
+
 class BkgVisual {
   PImage imgBkg;
   PImage imgEyes;
@@ -224,17 +223,15 @@ class BkgVisual {
   BkgVisual() {
     imgBkg = loadImage("images/Tutorial_take_weapon/background.png");
     imgEyes = loadImage("images/Tutorial_take_weapon/blinking eye.png");
-    text = "Welcome to Boom!Cha!Cha!";
-    text_mid = "";
-    aw = createFont("Comic Sans MS Bold.ttf", 32);
+    aw = createFont("fonts/Comic Sans MS Bold.ttf", 32);
     pots = new PImage[6];
     for (int i = 0; i < 6; i++) {
       pots[i] = loadImage("images/Tutorial_take_weapon/pots"+i+".png");
     }
-    border = loadImage("images/border.png");
+    border = loadImage("images/Tutorial_bkg/border.png");
     
     showGot = false;
-    gotit = loadImage("images/gotit.png");
+    gotit = loadImage("images/Tutorial_bkg/gotit.png");
   }
 
   void display(int beatNum, int phase, int interval) {     
@@ -255,8 +252,10 @@ class BkgVisual {
         noTint();
       }
     }
+    // pots
     image(pots[beatNum % 6], width/2, height/2);
     
+    // border
     if (beatNum % 6 < 2 || (beatNum % 6 == 2 && phase <= interval/2)) {
       tint(255,200);
       image(border, width/2, height/2);
@@ -268,13 +267,19 @@ class BkgVisual {
       image(border, width/2, height/2);
       noTint();
     }
-
+    
+    // text
     textAlign(CENTER);
     textFont(aw);
     fill(0);
-    text(text, width/2, 70);
-    text(text_mid, width/2, 300);
+    if (text != null) {
+      text(text, width/2, 70);
+    }
+    if (text_mid != null) {
+      text(text_mid, width/2, 300);
+    }
     
+    // showGotit, skip
     if (showGot) {
       if (beatNum % 3 < 2) {
         image(gotit, width/2, 720);
@@ -287,5 +292,17 @@ class BkgVisual {
     }
 
     // shadows
+  }
+}
+
+
+class BkgVisual_take_weapon extends BkgVisual {
+  BkgVisual_take_weapon() {
+    super();
+    text = "Tutorial 1 of 5: weapons and jobs";
+  }
+
+  void display(int beatNum, int phase, int interval) {     
+    super.display(beatNum, phase, interval);
   }
 }

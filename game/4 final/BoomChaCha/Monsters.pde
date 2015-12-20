@@ -165,7 +165,7 @@ public class Monster extends Creature {
       rotate(-PI/2);
       translate(-(x+w/3),-(y+h/2));
     } else if (beatNum - beatDying > 5){
-      dying = false;
+      //dying = false;
       alive = false;
     }
   }

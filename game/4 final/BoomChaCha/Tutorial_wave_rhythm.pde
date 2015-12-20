@@ -58,11 +58,11 @@ class Tutorial_wave_rhythm {
     wand = new Wand();
     shield = new Shield();
     bk = new BkgVisual();
-    bk.text = "Tutorial 2 of 5: act with rhythm";
+    bk.text = "Tutorial 2 of 5: Act with rhythm";
     bk.text_mid = "Follow the guides. Act when border blinks.";
 
     // sound (Minim!!)
-    minim = new Minim(Game_with_tutorial.this);
+    minim = new Minim(BoomChaCha.this);
     magic = minim.loadFile("music/magic.mp3", 512);
     swipe = minim.loadFile("music/swipe.mp3", 512);
     defence = minim.loadFile("music/shield.mp3", 512);

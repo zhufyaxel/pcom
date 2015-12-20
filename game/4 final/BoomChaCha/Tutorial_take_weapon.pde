@@ -156,6 +156,7 @@ class Tutorial_take_weapon {
  void inputValues() {
    if (input == "swipe") {
      if (enablePass) {
+       sol.play();
        pass = true;
      }
    }

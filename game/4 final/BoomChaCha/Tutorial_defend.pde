@@ -1,9 +1,9 @@
-public class Tutorial_attack {
+public class Tutorial_defend {
   // BGM
   BGM bgm;
 
   //Visual part
-  BkgVisual_attack bk;
+  BkgVisual_defend bk;
   Defender yue;
   Warrior zhu;
   Mage shu;
@@ -15,6 +15,7 @@ public class Tutorial_attack {
   // sound
   Minim minim;
   AudioPlayer magic, swipe, defence;
+  AudioPlayer bad;  // added for monster
   Note dol, mi, sol;
   Note dol_low, mi_low, sol_low;
   //something for judgement
@@ -40,8 +41,10 @@ public class Tutorial_attack {
   boolean pass = false;
   int beatPass = 0;
   int cons_beat;// for change the instruction if it is too long;
+  
+  int score;
 
-  Tutorial_attack(BGM _bgm) {
+  Tutorial_defend(BGM _bgm) {
     bgm = _bgm;
     // input
     orders = new String[3];
@@ -65,13 +68,14 @@ public class Tutorial_attack {
     sword = new Sword();
     wand = new Wand();
     shield = new Shield();
-    bk = new BkgVisual_attack();
+    bk = new BkgVisual_defend();
     startBeat = bgm.beatsPlayed();
     // sound (Minim!!)
     minim = new Minim(BoomChaCha.this);
     magic = minim.loadFile("music/magic.mp3", 512);
     swipe = minim.loadFile("music/swipe.mp3", 512);
     defence = minim.loadFile("music/shield.mp3", 512);
+    bad = minim.loadFile("music/bad_30.mp3", 512);
 
     dol = new Note(minim, "music/dol.mp3");
     mi = new Note(minim, "music/mi.mp3");
@@ -82,6 +86,8 @@ public class Tutorial_attack {
 
     pass = false;
     startBeat = 0;
+    
+    score = 0;
   }
 
   void setStart(int _startBeat) {
@@ -100,26 +106,27 @@ public class Tutorial_attack {
 
     // initial stage
     if (beats <= 48) {
-      bk.text = "Tutorial 3 of 5: Powerful Attack";
+      bk.text = "Tutorial 5 of 5: Powerful Defence";
       fill(0, 0, 0, 200);
       noStroke();
       rectMode(CENTER);
       rect(width/2, height/2 + 48, width, height - 96);
       if (beats < 12) {
         fill(255);
-        text("Enemy shows up! Let's learn attack.", width/2, height/2) ;
+        text("A good defence saves your life.", width/2, height/2 - 40) ;
+        text("A powerful one makes you immortal.", width/2, height/2);
       } else if (beats < 24) {
         fill(255);
-        text("Sway the sword on 'Boom', then you can do attack.", width/2, height/2);
+        text("Push the shield on 'Boom' to defend yourselves.", width/2, height/2);
       } else if (beats < 36) {
         fill(255);
-        text("As you learned, ", width/2, height/2 - 40);
-        text("if sword is followed by 'Cha Cha', ", width/2, height/2);
-        text("attack will become more powerful.", width/2, height/2 + 40);
+        text("Likewise, ", width/2, height/2 - 40);
+        text("if shield is followed by 'Cha Cha', ", width/2, height/2);
+        text("the defence will become more powerful.", width/2, height/2 + 40);
       } else if (beats < 48) {
         fill(255);
-        text("Now, beat the enemy hard with BoomChaCha!", width/2, height/2);
-      }
+        text("Timing is the last thing you need to learn.", width/2, height/2);
+      } 
     } 
     // after initialized, players' turn
     else if (beatPass == 0) {  // when not pass
@@ -133,10 +140,9 @@ public class Tutorial_attack {
         onBeat();
       }
       // end
-      if (!mon.alive) {
-        enablePass = true;
-        bk.showGot = true;
-        bk.text_mid = "Well done!";
+      if (score >= 5) {
+        bk.text_mid = "Well done! You're well prepared!";
+        beatPass = bgm.beatsPlayed();
       }
     } else {  // if beatPass != 0, 
       if (bgm.beatsPlayed() - beatPass >= 6) {
@@ -148,43 +154,48 @@ public class Tutorial_attack {
 
   void onBeat() {
     int n = bgm.n();
+    
+    // players' cycle
     if (n == 2) {
       // clear text
       bk.text_mid = null;
     }
-
+    
     if (n == 3) {
       // get feedback
-      if (orders[0] == "Attack") {
+      if (orders[0] == "Defend") {
         power = beatJudges[0] + beatJudges[1] + beatJudges[2];
-        //power = 6;
-        //zhu.jump(true);
-        swipe.rewind();
-        swipe.cue(100);
-        swipe.play();
-        zhu.setState("attack");
-        playerAttack(power);
-        println("Attack", power);
+        yue.setState("defend");
+        println("Defend", power);
         if (beatJudges[0] != 0 && beatJudges[1] != 0 && beatJudges[2] != 0) {
-          bk.text_mid = "Powerful Attack!";
+          if (mon.currentState() == "attack") {
+            score += 1;
+            bk.text_mid = "Powerful defence! Counted " + score + "/5";
+          } else {
+            bk.text_mid = "Powerful defence.";
+          }
           //bk.excellent = true;
         } else {
-          bk.text_mid = "Good! Assist with more 'Cha'.";
+          if (mon.currentState() == "attack") {
+            bk.text_mid = "Counted! Assist with more 'Cha'.";
+          } else {
+            bk.text_mid = "Good. Assist with more 'Cha'.";
+          }
           //bk.good = true;
         }
       } else if (orders[0] != "Null") {
-        bk.text_mid = "Try to start 'Boom' with sword to make an attack.";
+        bk.text_mid = "Try to start 'Boom' with shield to defend yourself.";
         //bk.try_again = true;
       } else {
         if (beatJudges[1] != 0 || beatJudges[2] != 0) {
-          bk.text_mid = "Try to make a 'Boom' with sword.";
+          bk.text_mid = "Try to make a 'Boom' with shield.";
           //bk.try_again = true;
         } else {
           // no input, do nothing
         }
       }
     }
-    // players' cycle
+
     if (n == 4) {
       for (int i = 0; i < 3; i++) {
         orders[i] = "Null";
@@ -204,10 +215,65 @@ public class Tutorial_attack {
       bk.excellent = false;
       bk.good = false;
       bk.try_again = false;
+      
+      // replenish health or they will die fast
+      zhu.blood = zhu.maxBlood * 2;
+      yue.blood = yue.maxBlood * 2;
+      shu.blood = shu.maxBlood * 2;
     }
     /// change the words
+    
+    //monster's cycle
+    // when alive, do as many attack as it can
+    if (mon.alive) {
+      if (n == 2) {
+        if (monsOrder == "stay" && mon.currentState() == "stay") {
+          int mood = 1;
+          if (mood == 1) {
+            monsOrder = "attack";
+          } else {
+            monsOrder = "stay";
+          }
+        }
+      }
+      if (n == 3) {
+        if (monsOrder == "attack" && mon.currentState() == "stay") {
+          mon.setState("prepare");
+          bad.rewind();
+          bad.play();
+        } 
+        if (!mon.dying && (mon.currentState() == "attack" || mon.currentState() == "charge")) {
+          monsterAttack();
+          monsOrder = "stay";
+        }
+      }
+    }
   }
 
+  void monsterAttack() {
+      if (orders[0] == "Defend") {
+        defence.rewind();
+        defence.cue(50);
+        defence.play();
+        if (power == 6) {
+          zhu.blood -= 0;
+          yue.blood -= 0;
+          shu.blood -= 0;
+        } else if (power > 2) {
+          zhu.blood -= 1;
+          yue.blood -= 1;
+          shu.blood -= 1;
+        } else {
+          zhu.blood -= 2;
+          yue.blood -= 2;
+          shu.blood -= 2;
+        }
+      } else {
+        zhu.blood -= 3;
+        yue.blood -= 3;
+        shu.blood -= 3;
+      }
+    }
 
   void myKeyInput() {
     if (after_initial) {
@@ -238,7 +304,7 @@ public class Tutorial_attack {
         pass = true;
       }
     }
-
+    
     int index = ((bgm.timePlayed() + bgm.interval()/2) / bgm.interval()) % 6;  //align to center
 
     boolean onCycle = (index < 3);
@@ -357,7 +423,7 @@ public class Tutorial_attack {
 }
 
 
-public class BkgVisual_attack extends BkgVisual {
+public class BkgVisual_defend extends BkgVisual {
   PImage Instruction;
   PImage Excellent;
   PImage Good;
@@ -369,12 +435,12 @@ public class BkgVisual_attack extends BkgVisual {
   boolean good = false;
   boolean try_again = false;
 
-  BkgVisual_attack() {
+  BkgVisual_defend() {
     super();
-    Instruction = loadImage("images/Tutorial_attack/t4.png");
-    Excellent = loadImage("images/Tutorial_attack/perfect.png");
-    Good = loadImage("images/Tutorial_attack/good.png");
-    Try_again = loadImage("images/Tutorial_attack/try again.png");
+    Instruction = loadImage("images/Tutorial_defend/t4.png");
+    Excellent = loadImage("images/Tutorial_defend/perfect.png");
+    Good = loadImage("images/Tutorial_defend/good.png");
+    Try_again = loadImage("images/Tutorial_defend/try again.png");
     boom = loadImage("images/status/Boom.png");
     cha = loadImage("images/status/Cha.png");
     text_mid_y = 240;

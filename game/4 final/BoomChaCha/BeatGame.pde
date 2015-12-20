@@ -34,7 +34,8 @@ public class BeatGame {
   
   // sound
   Minim minim;
-  AudioPlayer magic, swipe, shield;
+  AudioPlayer magic, swipe, defence;
+  AudioPlayer bad;
   Note dol, mi, sol;
   Note dol_low, mi_low, sol_low;
 
@@ -53,6 +54,7 @@ public class BeatGame {
   float xMon, yMon, wMon, hMon;
   int bMon;
 
+  boolean end;
 
   BeatGame () {
     // global settings
@@ -62,16 +64,14 @@ public class BeatGame {
     visual = new Visual();
     
     // bgm
-    String path = "music/funny_170.mp3";
-    int bpm = 170;    // 180 with funny
-    int musicBeats = 120;
-    bgm = new BGM(path, bpm, musicBeats);
+    bgm = new BGM("music/funny_170.mp3", 170, 120);
     
     // sound (Minim!!)
     minim = new Minim(BoomChaCha.this);
     magic = minim.loadFile("music/magic.mp3", 512);
     swipe = minim.loadFile("music/swipe.mp3", 512);
-    shield = minim.loadFile("music/shield.mp3", 512);
+    defence = minim.loadFile("music/shield.mp3", 512);
+    bad = minim.loadFile("music/bad_30.mp3", 512);
     
     dol = new Note(minim, "music/dol.mp3");
     mi = new Note(minim, "music/mi.mp3");
@@ -130,6 +130,8 @@ public class BeatGame {
     shu = new Mage(bgm.interval(), xShu, yShu, wShu, hShu, bPlayer);
     mon = new ArrayList<Monster>();
     mon.add(new Monster(bgm.interval(), xMon, yMon, wMon, hMon, bMon));
+    
+    end = false;
   }
 
   // main steps in draw()
@@ -237,7 +239,7 @@ public class BeatGame {
       text("Beats survived: "+ beatsSurvive, 180, 720);
       text("Killed: " + score, 680, 720);
 
-      if (orders[0] == "Heal") {
+      if (input == "wand") {
         yue = new Defender(bgm.interval(), xYue, yYue, wYue, hYue, bPlayer);
         zhu = new Warrior(bgm.interval(), xZhu, yZhu, wZhu, hZhu, bPlayer);
         shu = new Mage(bgm.interval(), xShu, yShu, wShu, hShu, bPlayer);
@@ -245,7 +247,7 @@ public class BeatGame {
         stage = "practice";
         break;
       }
-      if (orders[0] == "Attack") {
+      if (input == "swipe") {
         yue = new Defender(bgm.interval(), xYue, yYue, wYue, hYue, bPlayer);
         zhu = new Warrior(bgm.interval(), xZhu, yZhu, wZhu, hZhu, bPlayer);
         shu = new Mage(bgm.interval(), xShu, yShu, wShu, hShu, bPlayer);
@@ -256,7 +258,10 @@ public class BeatGame {
         stage = "fight";
         break;
       }
-
+      if (input == "defend") {
+        end = true;
+        break;
+      }
       break;
     }
   }
@@ -334,7 +339,8 @@ public class BeatGame {
       if (n == 3) {
         if (monsOrder == "attack" && mon.get(0).currentState() == "stay") {
           mon.get(0).setState("prepare");
-          //sword.play();
+          bad.rewind();
+          bad.play();
         } 
         if (!mon.get(0).dying && (mon.get(0).currentState() == "attack" || mon.get(0).currentState() == "charge")) {
           monsterAttack();
@@ -355,9 +361,9 @@ public class BeatGame {
 
   void monsterAttack() {
     if (orders[0] == "Defend") {
-      shield.rewind();
-      shield.cue(50);
-      shield.play();
+      defence.rewind();
+      defence.cue(50);
+      defence.play();
       if (power == 6) {
         zhu.blood -= 0;
         yue.blood -= 0;
@@ -421,13 +427,16 @@ public class BeatGame {
     if (key=='d' || key == 'd') {
       input = "defend";
     }
-    
-    inputValues();
+    if (stage != "defeated") {
+      inputValues();
+    }
   }
 
   void myPortInput(String _input) {
     input = _input;
-    inputValues();
+    if (stage != "defeated") {
+      inputValues();
+    }
   }
 
   void inputValues() {
@@ -549,7 +558,7 @@ public class BeatGame {
       zhu.changeBlood(-2);
       shu.changeBlood(-2);
       yue.changeBlood(-2);
-    }
+    } 
   }
 
 }

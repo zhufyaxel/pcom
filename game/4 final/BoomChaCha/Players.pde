@@ -13,6 +13,7 @@ public class Player extends Creature {
   void lifeCycle(int _beatNum, int _phase) {
     beatNum = _beatNum;
     phase = _phase;
+    blood = constrain(blood, 0, maxBlood * 2);
 
     if (alive && !dying) {
       move();

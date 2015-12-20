@@ -1,9 +1,9 @@
-public class Tutorial_attack {
+public class Tutorial_heal {
   // BGM
   BGM bgm;
 
   //Visual part
-  BkgVisual_attack bk;
+  BkgVisual_heal bk;
   Defender yue;
   Warrior zhu;
   Mage shu;
@@ -41,7 +41,7 @@ public class Tutorial_attack {
   int beatPass = 0;
   int cons_beat;// for change the instruction if it is too long;
 
-  Tutorial_attack(BGM _bgm) {
+  Tutorial_heal(BGM _bgm) {
     bgm = _bgm;
     // input
     orders = new String[3];
@@ -57,6 +57,9 @@ public class Tutorial_attack {
     yue = new Defender(bgm.interval(), 466, 489, 241*0.95, 388*0.95, 4);
     zhu = new Warrior(bgm.interval(), 285, 489, 226*0.95, 388*0.95, 4);
     shu = new Mage(bgm.interval(), 139, 489, 225*0.95, 388*0.95, 4);
+    yue.changeBlood(-7);
+    zhu.changeBlood(-7);
+    shu.changeBlood(-7);
     mon = new Monster(bgm.interval(), 760, 450, 438*0.95, 465*0.95, 15);
     monsOrder = "stay";    // stay, attack
     monsInterval1 = 8;     // practice mode
@@ -65,7 +68,7 @@ public class Tutorial_attack {
     sword = new Sword();
     wand = new Wand();
     shield = new Shield();
-    bk = new BkgVisual_attack();
+    bk = new BkgVisual_heal();
     startBeat = bgm.beatsPlayed();
     // sound (Minim!!)
     minim = new Minim(BoomChaCha.this);
@@ -100,25 +103,25 @@ public class Tutorial_attack {
 
     // initial stage
     if (beats <= 48) {
-      bk.text = "Tutorial 3 of 5: Powerful Attack";
+      bk.text = "Tutorial 4 of 5: Powerful Heal";
       fill(0, 0, 0, 200);
       noStroke();
       rectMode(CENTER);
       rect(width/2, height/2 + 48, width, height - 96);
       if (beats < 12) {
         fill(255);
-        text("Enemy shows up! Let's learn attack.", width/2, height/2) ;
+        text("You're hurt. Let's learn healing.", width/2, height/2) ;
       } else if (beats < 24) {
         fill(255);
-        text("Sway the sword on 'Boom', then you can do attack.", width/2, height/2);
+        text("Wave the wand on 'Boom', then you can heal yourself.", width/2, height/2);
       } else if (beats < 36) {
         fill(255);
-        text("As you learned, ", width/2, height/2 - 40);
-        text("if sword is followed by 'Cha Cha', ", width/2, height/2);
-        text("attack will become more powerful.", width/2, height/2 + 40);
+        text("Likewise,", width/2, height/2 - 40);
+        text("if wand is followed by 'Cha Cha', ", width/2, height/2);
+        text("it will become more powerful.", width/2, height/2 + 40);
       } else if (beats < 48) {
         fill(255);
-        text("Now, beat the enemy hard with BoomChaCha!", width/2, height/2);
+        text("Now, try to heal fast, as you'll keep getting hurt", width/2, height/2);
       }
     } 
     // after initialized, players' turn
@@ -133,10 +136,9 @@ public class Tutorial_attack {
         onBeat();
       }
       // end
-      if (!mon.alive) {
-        enablePass = true;
-        bk.showGot = true;
+      if (zhu.blood == zhu.maxBlood * 2) {
         bk.text_mid = "Well done!";
+        beatPass = bgm.beatsPlayed();
       }
     } else {  // if beatPass != 0, 
       if (bgm.beatsPlayed() - beatPass >= 6) {
@@ -148,6 +150,14 @@ public class Tutorial_attack {
 
   void onBeat() {
     int n = bgm.n();
+    if (n == 0) {
+      if (zhu.blood > 1) {
+        zhu.blood --;
+        yue.blood --;
+        shu.blood --;
+      }
+    }
+
     if (n == 2) {
       // clear text
       bk.text_mid = null;
@@ -155,29 +165,26 @@ public class Tutorial_attack {
 
     if (n == 3) {
       // get feedback
-      if (orders[0] == "Attack") {
+      if (orders[0] == "Heal") {
         power = beatJudges[0] + beatJudges[1] + beatJudges[2];
-        //power = 6;
-        //zhu.jump(true);
-        swipe.rewind();
-        swipe.cue(100);
-        swipe.play();
-        zhu.setState("attack");
-        playerAttack(power);
-        println("Attack", power);
+        magic.rewind();
+        magic.play();
+        shu.setState("heal");
+
+        println("Heal", power);
         if (beatJudges[0] != 0 && beatJudges[1] != 0 && beatJudges[2] != 0) {
-          bk.text_mid = "Powerful Attack!";
+          bk.text_mid = "Powerful Heal!";
           //bk.excellent = true;
         } else {
           bk.text_mid = "Good! Assist with more 'Cha'.";
           //bk.good = true;
         }
       } else if (orders[0] != "Null") {
-        bk.text_mid = "Try to start 'Boom' with sword to make an attack.";
+        bk.text_mid = "Try to start 'Boom' with wand to heal.";
         //bk.try_again = true;
       } else {
         if (beatJudges[1] != 0 || beatJudges[2] != 0) {
-          bk.text_mid = "Try to make a 'Boom' with sword.";
+          bk.text_mid = "Try to make a 'Boom' with wand.";
           //bk.try_again = true;
         } else {
           // no input, do nothing
@@ -200,13 +207,19 @@ public class Tutorial_attack {
       shu.removeCha();
       yue.removeCha();
     }
+
     if (n == 5) {
+      if (shu.currentState() == "heal") {
+        playerHeal(power);
+      }
       bk.excellent = false;
       bk.good = false;
       bk.try_again = false;
     }
     /// change the words
   }
+
+
 
 
   void myKeyInput() {
@@ -351,13 +364,31 @@ public class Tutorial_attack {
       }
     }
   }
-  void playerAttack(int power) {
-    mon.blood -= power;
+  void playerHeal(int power) {
+    if (power == 6) {
+      if (zhu.blood < 2 * zhu.maxBlood) {
+        zhu.blood += 3;
+        yue.blood += 3;
+        shu.blood += 3;
+      }
+    } else if (power > 2) {
+      if (zhu.blood < 2* zhu.maxBlood) {
+        zhu.blood += 2;
+        yue.blood += 2;
+        shu.blood += 2;
+      }
+    } else {
+      if (zhu.blood < 2* zhu.maxBlood) {
+        zhu.blood += 1;
+        yue.blood += 1;
+        shu.blood += 1;
+      }
+    }
   }
 }
 
 
-public class BkgVisual_attack extends BkgVisual {
+public class BkgVisual_heal extends BkgVisual {
   PImage Instruction;
   PImage Excellent;
   PImage Good;
@@ -369,12 +400,12 @@ public class BkgVisual_attack extends BkgVisual {
   boolean good = false;
   boolean try_again = false;
 
-  BkgVisual_attack() {
+  BkgVisual_heal() {
     super();
-    Instruction = loadImage("images/Tutorial_attack/t4.png");
-    Excellent = loadImage("images/Tutorial_attack/perfect.png");
-    Good = loadImage("images/Tutorial_attack/good.png");
-    Try_again = loadImage("images/Tutorial_attack/try again.png");
+    Instruction = loadImage("images/Tutorial_heal/t4.png");
+    Excellent = loadImage("images/Tutorial_heal/perfect.png");
+    Good = loadImage("images/Tutorial_heal/good.png");
+    Try_again = loadImage("images/Tutorial_heal/try again.png");
     boom = loadImage("images/status/Boom.png");
     cha = loadImage("images/status/Cha.png");
     text_mid_y = 240;

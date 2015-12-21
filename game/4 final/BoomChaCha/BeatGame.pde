@@ -1,4 +1,7 @@
 public class BeatGame {
+  // BGM
+  BGM bgm;
+  
   // stage related
   String stage;   // stage 1: "practice" free trial
   // stage 2: "fight" play and monster fight, and score at the same time
@@ -29,9 +32,6 @@ public class BeatGame {
   // visual
   Visual visual;
   
-  // BGM
-  BGM bgm;
-  
   // sound
   Minim minim;
   AudioPlayer magic, swipe, defence;
@@ -56,16 +56,16 @@ public class BeatGame {
 
   boolean end;
 
-  BeatGame () {
+  BeatGame (BGM _bgm) {
+    // bgm
+    bgm = _bgm;
+    
     // global settings
     imageMode(CENTER);
 
     // visual
     visual = new Visual();
-    
-    // bgm
-    bgm = new BGM("music/funny_170.mp3", 170, 120);
-    
+       
     // sound (Minim!!)
     minim = new Minim(BoomChaCha.this);
     magic = minim.loadFile("music/magic.mp3", 512);
@@ -137,7 +137,7 @@ public class BeatGame {
   // main steps in draw()
   void execute() {
     background(0);
-    bgm.step();
+    //bgm.step();
     if (bgm.newBeatIn()) {
       onBeat();
     }
@@ -192,7 +192,7 @@ public class BeatGame {
         break;
       }
 
-      if (!zhu.isAlive()) {
+      if (!zhu.isAlive() || beatsSurvive >= 500) {
         stage = "defeated";
         break;
       }
@@ -223,7 +223,7 @@ public class BeatGame {
       fill(0);
 
       beatsSurvive = bgm.beatsPlayed() - beatFight;
-      text("Beats survived: "+ beatsSurvive, 180, 720);
+      text("Beats survived: "+ beatsSurvive + "/500", 180, 720);
 
       text("Killed: " + score, 680, 720);
 

@@ -98,24 +98,29 @@ class Tutorial_take_weapon {
           beatShow = bgm.beatsPlayed();
         }
         if (beatShow != 0 && bgm.beatsPlayed - beatShow == 3) {
+          myPort.write('d');
           zhu.setState("attack");
           swipe.play();
         }
         if (beatShow != 0 && bgm.beatsPlayed - beatShow == 6) {
+          //myPort.write('f');
           yue.alive = true;
           yue.jump(true);
           bk.text_mid = "Shield prevents damage!";
         }
         if (beatShow != 0 && bgm.beatsPlayed - beatShow == 9) {
+          //myPort.write('f');
           yue.setState("defend");
           defence.play();
         }
         if (beatShow != 0 && bgm.beatsPlayed - beatShow == 12) {
+          //myPort.write('g');
           shu.alive = true;
           shu.jump(true);
           bk.text_mid = "Wand heals all!";
         }
         if (beatShow != 0 && bgm.beatsPlayed - beatShow == 15) {
+          //myPort.write('g');
           shu.setState("heal");
           magic.play();
         }

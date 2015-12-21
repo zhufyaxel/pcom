@@ -11,8 +11,8 @@ class Tutorials {
   int beatsSwitching;
   boolean pass;
 
-  Tutorials() {
-    bgm = new BGM("music/funny_170.mp3", 170, 120);
+  Tutorials(BGM _bgm) {
+    bgm = _bgm;
     scene1 = new Tutorial_take_weapon(bgm);
     scene2 = new Tutorial_wave_rhythm(bgm);
     scene3 = new Tutorial_attack(bgm);
@@ -25,7 +25,6 @@ class Tutorials {
   }
 
   void execute() {
-    bgm.step();
     switch(scene) {
     case 0: 
       if (bgm.beatsPlayed - beatPass >= beatsSwitching) {
@@ -112,20 +111,23 @@ class Tutorials {
     }
   }
   
-  //void myPortInput() {
-  //  switch (scene) {
-  //  case 1:
-  //    scene1.myPortInput();
-  //    break;
-  //  case 2: 
-  //    scene2.myPortInput();
-  //    break;
-  //  case 3: 
-  //    scene3.myPortInput();
-  //    break;
-  //  }
-  //}
-}
-
-void myPortInput() {
+  void myPortInput(String input) {
+   switch (scene) {
+    case 1:
+      scene1.myPortInput(input);
+      break;
+    case 2: 
+      scene2.myPortInput(input);
+      break;
+    case 3: 
+      scene3.myPortInput(input);
+      break;
+    case 4: 
+      scene4.myPortInput(input);
+      break;
+    case 5: 
+      scene5.myPortInput(input);
+      break;
+    }
+  }
 }

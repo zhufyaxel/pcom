@@ -140,7 +140,7 @@ public class Tutorial_defend {
         onBeat();
       }
       // end
-      if (score >= 5) {
+      if (score >= 3) {
         bk.text_mid = "Well done! You're well prepared!";
         beatPass = bgm.beatsPlayed();
       }
@@ -170,7 +170,7 @@ public class Tutorial_defend {
         if (beatJudges[0] != 0 && beatJudges[1] != 0 && beatJudges[2] != 0) {
           if (mon.currentState() == "attack") {
             score += 1;
-            bk.text_mid = "Powerful defence! Counted " + score + "/5";
+            bk.text_mid = "Powerful defence! Counted " + score + "/3";
           } else {
             bk.text_mid = "Powerful defence.";
           }

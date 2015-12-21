@@ -103,24 +103,24 @@ class Tutorial_take_weapon {
           swipe.play();
         }
         if (beatShow != 0 && bgm.beatsPlayed - beatShow == 6) {
-          //myPort.write('f');
+          myPort.write('f');
           yue.alive = true;
           yue.jump(true);
           bk.text_mid = "Shield prevents damage!";
         }
         if (beatShow != 0 && bgm.beatsPlayed - beatShow == 9) {
-          //myPort.write('f');
+          myPort.write('f');
           yue.setState("defend");
           defence.play();
         }
         if (beatShow != 0 && bgm.beatsPlayed - beatShow == 12) {
-          //myPort.write('g');
+          myPort.write('g');
           shu.alive = true;
           shu.jump(true);
           bk.text_mid = "Wand heals all!";
         }
         if (beatShow != 0 && bgm.beatsPlayed - beatShow == 15) {
-          //myPort.write('g');
+          myPort.write('g');
           shu.setState("heal");
           magic.play();
         }
@@ -309,7 +309,7 @@ class BkgVisual {
 class BkgVisual_take_weapon extends BkgVisual {
   BkgVisual_take_weapon() {
     super();
-    text = "Tutorial 1 of 5: Weapons and abilities";
+    text = "Tutorial 1 of 5: Weapons and abilities";  // of 5
   }
 
   void display(int beatNum, int phase, int interval) {     

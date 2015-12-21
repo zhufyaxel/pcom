@@ -34,9 +34,9 @@ void setup() {
 
 void draw() {
   if (bgm.beatsPlayed < 5) {
-    myPort.write('d');
-    myPort.write('f');
-    myPort.write('g');  
+   myPort.write('d');
+   myPort.write('f');
+   myPort.write('g');  
   }
   
   bgm.step();  

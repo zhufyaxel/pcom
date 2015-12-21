@@ -48,8 +48,10 @@ class Tutorials {
       if (scene2.pass) {
         beatPass = bgm.beatsPlayed();
         scene = 0;
-        nextScene = 3;
-        scene3.setStart(bgm.beatsPlayed());
+        //nextScene = 3;
+        //scene3.setStart(bgm.beatsPlayed());
+        nextScene = 0;  // = 3;
+        pass = true;  // Tutorial ended
         break;
       } else {
         scene2.execute();

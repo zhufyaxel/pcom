@@ -88,11 +88,9 @@ class Tutorial_wave_rhythm {
     }
 
     // where there was no guides...try memory
-    if (score <= 3) {
+    if (score < 3) {
       visual_guides();
-    } else if (score <= 6) {
-      bk.text_mid = "Keep doing. Act when border blinks.";
-    }
+    } 
     
     // feedback
     if (bgm.n >= 3 && bgm.n <=5) {
@@ -106,8 +104,8 @@ class Tutorial_wave_rhythm {
     yue.lifeCycle(bgm.beatsPlayed(), bgm.phase());
     
     text("Goal:", 900, 680);
-    text(score + "/7", 900, 720);
-    if (score >= 7) {
+    text(score + "/3", 900, 720);
+    if (score >= 3) {
       bk.text_mid = "Good job!";
       if (bgm.n == 2) {
         enablePass = true;
@@ -161,6 +159,10 @@ class Tutorial_wave_rhythm {
       if (orders[0] == "Null" && orders[1] == "Null" && orders[2] == "Null") {
         feedback = "";
       } else if (orders[0] == "Attack" && orders[1] == "Defend" && orders[2] == "Heal") {
+        swipe.rewind();
+        swipe.cue(100);
+        swipe.play();
+        zhu.setState("attack");
         if (power == 6) {
           feedback = "Perfect! + 1";
           score += 1;

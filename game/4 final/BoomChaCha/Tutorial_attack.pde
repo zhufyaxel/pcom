@@ -57,7 +57,7 @@ public class Tutorial_attack {
     yue = new Defender(bgm.interval(), 466, 489, 241*0.95, 388*0.95, 4);
     zhu = new Warrior(bgm.interval(), 285, 489, 226*0.95, 388*0.95, 4);
     shu = new Mage(bgm.interval(), 139, 489, 225*0.95, 388*0.95, 4);
-    mon = new Monster(bgm.interval(), 760, 450, 438*0.95, 465*0.95, 15);
+    mon = new Monster(bgm.interval(), 760, 450, 438*0.95, 465*0.95, 9);
     monsOrder = "stay";    // stay, attack
     monsInterval1 = 8;     // practice mode
     monsInterval2 = 14;    // fight mode

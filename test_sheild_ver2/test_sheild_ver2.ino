@@ -62,7 +62,7 @@ void loop() {
     if (difindex <= 0) {
       difindex = difindex + n;
     }
-    if (z_ave - z_min > 50 && z_max - z_ave > 50 && difindex < 3) {
+    if (z_ave - z_min > 40 && z_max - z_ave > 40 && difindex < 3) {
       index = 0;
       count++;
       Serial.println("d,d,");
@@ -97,30 +97,30 @@ void loop() {
 }
 
 void lightOn() {
-  //in 600 ms, running from top to bottom
+  //in 240 ms, running from top to bottom
 
   digitalWrite(13, HIGH);
-  delay(100);
+  delay(40);
 
   digitalWrite(12, HIGH);
   digitalWrite(8, HIGH);
-  delay(100);
+  delay(40);
 
   digitalWrite(11, HIGH);
   digitalWrite(9, HIGH);
-  delay(100);
+  delay(40);
 
   digitalWrite(10, HIGH);
   digitalWrite(13, LOW);
-  delay(100);
+  delay(40);
 
   digitalWrite(12, LOW);
   digitalWrite(8, LOW);
-  delay(100);
+  delay(40);
 
   digitalWrite(11, LOW);
   digitalWrite(9, LOW);
-  delay(100);
+  delay(40);
 
   digitalWrite(10, LOW);
 }

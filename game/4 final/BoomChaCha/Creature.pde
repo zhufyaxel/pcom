@@ -177,7 +177,7 @@ public class Creature {
     if (onBeat) {
       vj = v0;
     } else {
-      vj = v0/2;  // /2
+      vj = v0;  // /2
     }
     
     if (y == y0) {

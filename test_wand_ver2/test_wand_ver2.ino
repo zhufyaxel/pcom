@@ -89,15 +89,15 @@ void loop() {
 }
 
 void lightOn() {
-  //in 600 ms, running from top to bottom
+  //in 240 ms, running from top to bottom
   for (int i = 12; i >= 9; i--) {
     digitalWrite(i, HIGH);
-    delay(75);
+    delay(30);
   }
   digitalWrite(8, HIGH);
   for (int i = 12; i >= 9; i--) {
     digitalWrite(i, LOW);
-    delay(75);
+    delay(30);
   }
   digitalWrite(8, LOW);
 }

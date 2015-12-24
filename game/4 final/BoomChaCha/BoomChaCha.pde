@@ -33,7 +33,9 @@ void setup() {
 }
 
 void draw() {
-  if (bgm.beatsPlayed < 5) {
+  if (bgm.beatsPlayed < 6) {
+   //myPort.write('s');‰
+  } else if (bgm.beatsPlayed < 18) {
    myPort.write('d');
    myPort.write('f');
    myPort.write('g');  

@@ -24,7 +24,7 @@ void setup() {
   stage = "main";
   tutorials = new ArrayList<Tutorials>();
   game = new ArrayList<BeatGame>();
-  bgm = new BGM("music/funny_170.mp3", 170, 120);
+  bgm = new BGM("music/funny_drum_min.mp3", 150, 120);
   
   main = loadImage("images/main/tutorial_menu.png");
   aw = createFont("fonts/Comic Sans MS Bold.ttf", 32);

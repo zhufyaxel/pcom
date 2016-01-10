@@ -1,7 +1,7 @@
 public class BeatGame {
   // BGM
   BGM bgm;
-  
+
   // stage related
   String stage;   // stage 1: "practice" free trial
   // stage 2: "fight" play and monster fight, and score at the same time
@@ -18,7 +18,7 @@ public class BeatGame {
   String[] orders;
   int[] beatJudges;
   int power;
-  
+
   String input;  //serial input or key input
   boolean warriorCalled;
   boolean mageCalled;
@@ -31,7 +31,7 @@ public class BeatGame {
 
   // visual
   Visual visual;
-  
+
   // sound
   Minim minim;
   AudioPlayer magic, swipe, defence;
@@ -59,20 +59,20 @@ public class BeatGame {
   BeatGame (BGM _bgm) {
     // bgm
     bgm = _bgm;
-    
+
     // global settings
     imageMode(CENTER);
 
     // visual
     visual = new Visual();
-       
+
     // sound (Minim!!)
     minim = new Minim(BoomChaCha.this);
     magic = minim.loadFile("music/magic.mp3", 512);
     swipe = minim.loadFile("music/swipe.mp3", 512);
     defence = minim.loadFile("music/shield.mp3", 512);
     bad = minim.loadFile("music/bad_30.mp3", 512);
-    
+
     dol = new Note(minim, "music/dol.mp3");
     mi = new Note(minim, "music/mi.mp3");
     sol = new Note(minim, "music/sol.mp3");
@@ -93,7 +93,7 @@ public class BeatGame {
       orders[i] = "Null";
       beatJudges[i] = 0;
     }
-    
+
     warriorCalled = false;
     mageCalled = false;
     defenderCalled = false;
@@ -123,14 +123,14 @@ public class BeatGame {
     wMon = 438*0.95; 
     hMon = 465*0.95;
     bMon = 12;
-    
+
     // characters and monsters
     yue = new Defender(bgm.interval(), xYue, yYue, wYue, hYue, bPlayer);
     zhu = new Warrior(bgm.interval(), xZhu, yZhu, wZhu, hZhu, bPlayer);
     shu = new Mage(bgm.interval(), xShu, yShu, wShu, hShu, bPlayer);
     mon = new ArrayList<Monster>();
     mon.add(new Monster(bgm.interval(), xMon, yMon, wMon, hMon, bMon));
-    
+
     end = false;
   }
 
@@ -182,7 +182,7 @@ public class BeatGame {
 
       textSize(28);
       fill(0);
-      text("Killed: " + score, 680, 720);
+      text("Killed: " + score, 750, 740);
 
       break;
 
@@ -223,9 +223,9 @@ public class BeatGame {
       fill(0);
 
       beatsSurvive = bgm.beatsPlayed() - beatFight;
-      text("Beats survived: "+ beatsSurvive + "/500", 180, 720);
+      text("Beats survived: "+ beatsSurvive + "/500", 280, 740);
 
-      text("Killed: " + score, 680, 720);
+      text("Killed: " + score, 750, 740);
 
       break;
 
@@ -274,7 +274,7 @@ public class BeatGame {
 
     // players' cycle
     if (stage != "defeated") {
-      
+
       if (n == 3) {
         power = beatJudges[0] + beatJudges[1] + beatJudges[2];
         //power = 6;
@@ -299,7 +299,7 @@ public class BeatGame {
           //playerDefend(power);  // see monsterattack
         }
       }
-      
+
       if (n == 4) {
         for (int i = 0; i < 3; i++) {
           orders[i] = "Null";
@@ -313,7 +313,7 @@ public class BeatGame {
         yue.removeBoom();
         zhu.removeCha();
         shu.removeCha();
-        yue.removeCha();        
+        yue.removeCha();
       }
 
       if (n == 5) {
@@ -412,8 +412,8 @@ public class BeatGame {
 
 
   void myKeyPressed() {
-     myKeyInput();
-     takeDamage();
+    myKeyInput();
+    takeDamage();
   }
 
   // physical input, same as keyboard
@@ -452,59 +452,26 @@ public class BeatGame {
     if (input == "wand") {
       input = "";
       shu.jump(onCycle && onBeat && !mageCalled);  // only when the three are true, then can the character jump high
-      
+
       if (onCycle) {    // beatNum % 6 < 3 || beatNum == 5, because some may hit before the first beat
         if (onBeat) {
           dol.play();
         } else {
           dol_low.play();
         }
-        
+
         if (orders[index] == "Null" && !mageCalled) {        
           orders[index] = "Heal";
           mageCalled = true;
-          
+
           switch(index) {
-            case 0:
-              shu.addBoom();
-              break;
-            case 1: case 2:
-              shu.addCha();
-              break;
-          }
-          
-          if (onBeat) {
-            beatJudges[index] = 2;
-          } else {
-            beatJudges[index] = 1;
-          }
-          println(index, orders[index], onBeat);
-        }
-      }
-    }
-    
-    if (input == "swipe") {
-      input = "";
-      zhu.jump(onCycle && onBeat && !warriorCalled);  // only when the three are true, then can the character jump high
-      
-      if (onCycle) {    // beatNum % 6 < 3 || beatNum == 5, because some may hit before the first beat
-        if (onBeat) {
-          sol.play();
-        } else {
-          sol_low.play();
-        } 
-        
-        if (orders[index] == "Null" && !warriorCalled) {
-          orders[index] = "Attack";
-          warriorCalled = true;
-          
-          switch(index) {
-            case 0:
-              zhu.addBoom();
-              break;
-            case 1: case 2:
-              zhu.addCha();
-              break;
+          case 0:
+            shu.addBoom();
+            break;
+          case 1: 
+          case 2:
+            shu.addCha();
+            break;
           }
 
           if (onBeat) {
@@ -516,7 +483,42 @@ public class BeatGame {
         }
       }
     }
-    
+
+    if (input == "swipe") {
+      input = "";
+      zhu.jump(onCycle && onBeat && !warriorCalled);  // only when the three are true, then can the character jump high
+
+      if (onCycle) {    // beatNum % 6 < 3 || beatNum == 5, because some may hit before the first beat
+        if (onBeat) {
+          sol.play();
+        } else {
+          sol_low.play();
+        } 
+
+        if (orders[index] == "Null" && !warriorCalled) {
+          orders[index] = "Attack";
+          warriorCalled = true;
+
+          switch(index) {
+          case 0:
+            zhu.addBoom();
+            break;
+          case 1: 
+          case 2:
+            zhu.addCha();
+            break;
+          }
+
+          if (onBeat) {
+            beatJudges[index] = 2;
+          } else {
+            beatJudges[index] = 1;
+          }
+          println(index, orders[index], onBeat);
+        }
+      }
+    }
+
     if (input == "defend") {
       input = "";
       yue.jump(onCycle && onBeat && !defenderCalled);  // only when the three are true, then can the character jump high
@@ -529,14 +531,15 @@ public class BeatGame {
         if (orders[index] == "Null" && !defenderCalled) {
           orders[index] = "Defend";
           defenderCalled = true;
-          
+
           switch(index) {
-            case 0:
-              yue.addBoom();
-              break;
-            case 1: case 2:
-              yue.addCha();
-              break;
+          case 0:
+            yue.addBoom();
+            break;
+          case 1: 
+          case 2:
+            yue.addCha();
+            break;
           }
 
           if (onBeat) {
@@ -548,7 +551,6 @@ public class BeatGame {
         }
       }
     }
-    
   }
 
   // for practice purpose, slowly kill yourself
@@ -558,9 +560,8 @@ public class BeatGame {
       zhu.changeBlood(-2);
       shu.changeBlood(-2);
       yue.changeBlood(-2);
-    } 
+    }
   }
-
 }
 
 
@@ -571,6 +572,7 @@ public class Visual {
   PImage imgPlanet;
   PImage imgEyes;
   PImage[] imgGrass;
+  PImage border;
 
   Visual() {
     imgBkg = loadImage("images/background/background.png");
@@ -580,6 +582,7 @@ public class Visual {
     for (int i = 0; i < imgGrass.length; i++) {
       imgGrass[i] = loadImage("images/background/grass" + i + ".png");
     }
+    border = loadImage("images/Tutorial_bkg/border.png");
   }
 
   void show(int beatNum, int phase, int interval) {    
@@ -626,5 +629,49 @@ public class Visual {
     } else {
       image(imgGrass[1], width/2, height/2);
     }
+
+    // border
+    switch (beatNum % 6) {
+    case 0:
+      if (phase <= interval * 2/3) {
+        tint(255, 58, 57, 255);
+        image(border, width/2, height/2);
+        noTint();
+      } else {
+        int alpha = round(map(phase, interval/2, interval, 255, 30));
+        tint(255, 58, 57, alpha);
+        image(border, width/2, height/2);
+        noTint();
+      }
+      break;
+    case 1: 
+    case 2:
+      if (phase <= interval * 2/3) {
+          tint(255, 101, 100, 255);
+          image(border, width/2, height/2);
+          noTint();
+        } else {
+          int alpha = round(map(phase, interval/2, interval, 255, 30));
+          tint(255, 101, 100, alpha);
+          image(border, width/2, height/2);
+          noTint();
+        }
+        break;
+    }
+
+
+
+    //// border
+    //if (beatNum % 6 < 2 || (beatNum % 6 == 2 && phase <= interval/2)) {
+    //  tint(255,58,57,255);
+    //  image(border, width/2, height/2);
+    //  noTint();
+    //}
+    //if (beatNum % 6 == 2 && phase > interval / 2) {
+    //  int alpha = round(map(phase, interval/2, interval, 255, 128));
+    //  tint(255,58,57,alpha);
+    //  image(border, width/2, height/2);
+    //  noTint();
+    //}
   }
 }

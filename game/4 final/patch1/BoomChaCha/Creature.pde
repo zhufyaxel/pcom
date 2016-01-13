@@ -211,4 +211,7 @@ public class Creature {
     blood = constrain(blood, 0, 2*maxBlood);
   }
   
+  void replenish() {
+    blood = 2 * maxBlood;
+  }
 }

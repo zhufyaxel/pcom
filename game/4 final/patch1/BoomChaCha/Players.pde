@@ -150,8 +150,10 @@ public class Warrior extends Player {
         adjustX = 350;
         image(attack[1], x + 350, y, w, h);
       } else if (phase <= interval * 4/36) {
+        adjustX = 350;
         image(attack[2], x + 350, y, w, h);
       } else if (phase <= interval / 2) {
+        adjustX = 350;
         image(attack[3], x + 350, y, w, h);
       } else if (phase <= interval * 11/18) {
         adjustX = 200;

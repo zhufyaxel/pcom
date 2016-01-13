@@ -6,13 +6,22 @@ public class BeatGame {
   String stage;   // stage 1: "practice" free trial
   // stage 2: "fight" play and monster fight, and score at the same time
   // stage 3: "defeated" player dead -> fight again: back to stage 2
-  //                             -> practice again: back to stage 1
+  //                                 -> practice again: back to stage 1
+  //                                 -> menu: back to menu
+  // stage 4: "win" player win       -> fight again: back to stage 2
+  //                                 -> practice again: back to stage 1
+  //                                 -> menu: back to menu
 
   int score;
   int beatFight;
+  int beatDefeated;
+  int beatWin;
   int beatsSurvive;
 
-  PImage tryagain = loadImage("images/background/try_again.png");
+  PImage defeated = loadImage("images/background/defeated.png");
+  PImage win = loadImage("images/background/win.png");
+  PImage options1 = loadImage("images/background/options1.png");
+  PImage options2 = loadImage("images/background/options2.png");
 
   // input controls and vals (v2, multiple_key3)
   String[] orders;
@@ -84,6 +93,8 @@ public class BeatGame {
     stage = "practice";
     score = 0;
     beatFight = 0;
+    beatDefeated = 0;
+    beatWin = 0;
     beatsSurvive = 0;
 
     // input
@@ -122,7 +133,7 @@ public class BeatGame {
     yMon = 450; 
     wMon = 438*0.95; 
     hMon = 465*0.95;
-    bMon = 12;
+    bMon = 10;    // 10 for easier
 
     // characters and monsters
     yue = new Defender(bgm.interval(), xYue, yYue, wYue, hYue, bPlayer);
@@ -144,12 +155,30 @@ public class BeatGame {
 
     visual.show(bgm.beatsPlayed(), bgm.phase(), bgm.interval());
 
+    // force quit to menu = '0'
+    if (key == '0') {
+      end = true;
+    }
+
     switch(stage) {
     case "practice":
       if (key == '2') {
         stage = "fight";
         score = 0;
         beatFight = bgm.beatsPlayed();
+        // replenish the players if alive, else wait until respawn
+        if (zhu.isAlive()) {
+          shu.replenish();
+          zhu.replenish();
+          yue.replenish();
+        }
+        
+        // respawn the monster whatever
+        if (mon.size() > 0) {
+          mon.remove(0);
+        }
+        mon.add(new Monster(bgm.interval(), xMon, yMon, wMon, hMon, bMon));
+        
         break;
       }
 
@@ -171,7 +200,7 @@ public class BeatGame {
       // respawn the monster
       // try to avoid respawn on beat
       if (mon.size() == 0) {
-        if ((bgm.beatsPlayed() - beatClear) == monsInterval1) {
+        if ((bgm.beatsPlayed() - beatClear) >= monsInterval1) {
           mon.add(new Monster(bgm.interval(), xMon, yMon, wMon, hMon, bMon));
         }
       }
@@ -182,6 +211,7 @@ public class BeatGame {
 
       textSize(28);
       fill(0);
+      text("[Practice] Press '2' to enter real fight.", 320, 740);
       text("Killed: " + score, 750, 740);
 
       break;
@@ -191,8 +221,17 @@ public class BeatGame {
         stage = "practice";
         break;
       }
-
-      if (!zhu.isAlive() || beatsSurvive >= 500) {
+      
+      beatsSurvive = bgm.beatsPlayed() - beatFight;
+      
+      if (beatsSurvive >= 500) {
+        // longer happiness after success
+        beatWin = bgm.beatsPlayed();
+        stage = "win";
+        break;
+      } 
+      else if (!zhu.isAlive()) {
+        beatDefeated = bgm.beatsPlayed();
         stage = "defeated";
         break;
       }
@@ -210,7 +249,7 @@ public class BeatGame {
       // respawn the monster
       // try to avoid respawn on beat
       if (mon.size() == 0) {
-        if ((bgm.beatsPlayed() - beatClear) == monsInterval2) {
+        if ((bgm.beatsPlayed() - beatClear) >= monsInterval2) {
           mon.add(new Monster(bgm.interval(), xMon, yMon, wMon, hMon, bMon));
         }
       }
@@ -222,46 +261,100 @@ public class BeatGame {
       textSize(28);
       fill(0);
 
-      beatsSurvive = bgm.beatsPlayed() - beatFight;
-      text("Beats survived: "+ beatsSurvive + "/500", 280, 740);
+      text("[Fight] Beats survived: "+ beatsSurvive + "/500", 260, 740);
 
       text("Killed: " + score, 750, 740);
 
       break;
 
     case "defeated":
+      // show monster only
       if (mon.size() > 0) {
         mon.get(0).lifeCycle(bgm.beatsPlayed(), bgm.phase());
       }
+      
+      showDefeated();
 
-      showOptions();    // heal = practice mode, attack = fight mode
+      text("[Fight] Beats survived: "+ beatsSurvive, 260, 740);
+      text("Killed: " + score, 750, 740);
 
-      text("Beats survived: "+ beatsSurvive, 180, 720);
-      text("Killed: " + score, 680, 720);
-
-      if (input == "wand") {
-        yue = new Defender(bgm.interval(), xYue, yYue, wYue, hYue, bPlayer);
-        zhu = new Warrior(bgm.interval(), xZhu, yZhu, wZhu, hZhu, bPlayer);
-        shu = new Mage(bgm.interval(), xShu, yShu, wShu, hShu, bPlayer);
-
-        stage = "practice";
-        break;
+      // show options 3 beats later
+      if (bgm.beatsPlayed - beatDefeated >= 3) {
+        showOptions1();    // heal = practice mode, attack = fight mode
+        if (input == "wand") {
+          input = "";  // in case no input for two rounds
+          yue = new Defender(bgm.interval(), xYue, yYue, wYue, hYue, bPlayer);
+          zhu = new Warrior(bgm.interval(), xZhu, yZhu, wZhu, hZhu, bPlayer);
+          shu = new Mage(bgm.interval(), xShu, yShu, wShu, hShu, bPlayer);
+  
+          score = 0;
+          stage = "practice";
+          break;
+        }
+        if (input == "swipe") {
+          input = "";  // in case no input for two rounds
+          yue = new Defender(bgm.interval(), xYue, yYue, wYue, hYue, bPlayer);
+          zhu = new Warrior(bgm.interval(), xZhu, yZhu, wZhu, hZhu, bPlayer);
+          shu = new Mage(bgm.interval(), xShu, yShu, wShu, hShu, bPlayer);
+  
+          score = 0;
+          beatFight = bgm.beatsPlayed();
+  
+          stage = "fight";
+          break;
+        }
+        if (input == "defend") {
+          input = "";  // in case no input for two rounds
+          end = true;
+          break;
+        }
       }
-      if (input == "swipe") {
-        yue = new Defender(bgm.interval(), xYue, yYue, wYue, hYue, bPlayer);
-        zhu = new Warrior(bgm.interval(), xZhu, yZhu, wZhu, hZhu, bPlayer);
-        shu = new Mage(bgm.interval(), xShu, yShu, wShu, hShu, bPlayer);
+      
+      break;
+      
+    case "win":
+      // show players only
+      shu.lifeCycle(bgm.beatsPlayed(), bgm.phase());
+      zhu.lifeCycle(bgm.beatsPlayed(), bgm.phase());
+      yue.lifeCycle(bgm.beatsPlayed(), bgm.phase());
 
-        score = 0;
-        beatFight = bgm.beatsPlayed();
+      showWin();
 
-        stage = "fight";
-        break;
+      text("[Fight] Beats survived: "+ beatsSurvive, 260, 740);
+      text("Killed: " + score, 750, 740);
+
+      // show options 6 beats later
+      if (bgm.beatsPlayed - beatWin >= 6) {
+        showOptions2();    // heal = practice mode, attack = fight mode
+        if (input == "wand") {
+          input = "";  // in case no input for two rounds
+          yue = new Defender(bgm.interval(), xYue, yYue, wYue, hYue, bPlayer);
+          zhu = new Warrior(bgm.interval(), xZhu, yZhu, wZhu, hZhu, bPlayer);
+          shu = new Mage(bgm.interval(), xShu, yShu, wShu, hShu, bPlayer);
+  
+          score = 0;
+          stage = "practice";
+          break;
+        }
+        if (input == "swipe") {
+          input = "";  // in case no input for two rounds
+          yue = new Defender(bgm.interval(), xYue, yYue, wYue, hYue, bPlayer);
+          zhu = new Warrior(bgm.interval(), xZhu, yZhu, wZhu, hZhu, bPlayer);
+          shu = new Mage(bgm.interval(), xShu, yShu, wShu, hShu, bPlayer);
+  
+          score = 0;
+          beatFight = bgm.beatsPlayed();
+  
+          stage = "fight";
+          break;
+        }
+        if (input == "defend") {
+          input = "";  // in case no input for two rounds
+          end = true;
+          break;
+        }
       }
-      if (input == "defend") {
-        end = true;
-        break;
-      }
+      
       break;
     }
   }
@@ -406,14 +499,27 @@ public class BeatGame {
     }
   }
 
-  void showOptions() {
-    image(tryagain, width/2, height/2);
+  void showDefeated() {
+    image(defeated, width/2, height/2);
+  }
+
+  void showWin() {
+    image(win, width/2, height/2);
+  }
+  
+  void showOptions1() {
+      image(options1, width/2, height/2);
+  }
+  
+  void showOptions2() {
+      image(options2, width/2, height/2);
   }
 
 
   void myKeyPressed() {
     myKeyInput();
-    takeDamage();
+    //takeDamage();
+    //addBlood();
   }
 
   // physical input, same as keyboard
@@ -427,14 +533,26 @@ public class BeatGame {
     if (key=='d' || key == 'd') {
       input = "defend";
     }
-    if (stage != "defeated") {
+    if (key == '-' || key == '_' ) {
+      println("Hey!!");
+      zhu.changeBlood(-2);
+      shu.changeBlood(-2);
+      yue.changeBlood(-2);
+    }
+    if (key == '+' || key == '=' ) {
+      println("Yeah");
+      zhu.changeBlood(+2);
+      shu.changeBlood(+2);
+      yue.changeBlood(+2);
+    }
+    if (stage == "practice" || stage == "fight") {
       inputValues();
     }
   }
 
   void myPortInput(String _input) {
     input = _input;
-    if (stage != "defeated") {
+    if (stage == "practice" || stage == "fight") {
       inputValues();
     }
   }
@@ -553,15 +671,25 @@ public class BeatGame {
     }
   }
 
-  // for practice purpose, slowly kill yourself
-  void takeDamage() {
-    if (key == '-') {
-      println("Hey!!");
-      zhu.changeBlood(-2);
-      shu.changeBlood(-2);
-      yue.changeBlood(-2);
-    }
-  }
+  //// for practice purpose, slowly kill yourself
+  //void takeDamage() {
+  //  if (key == '-' || key == '_' ) {
+  //    println("Hey!!");
+  //    zhu.changeBlood(-2);
+  //    shu.changeBlood(-2);
+  //    yue.changeBlood(-2);
+  //  }
+  //}
+  
+  //// for practice purpose, slowly kill yourself
+  //void addBlood() {
+  //  if (key == '+' || key == '=' ) {
+  //    println("Yeah");
+  //    zhu.changeBlood(+2);
+  //    shu.changeBlood(+2);
+  //    yue.changeBlood(+2);
+  //  }
+  //}
 }
 
 

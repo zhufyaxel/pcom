@@ -25,6 +25,11 @@ class Tutorials {
   }
 
   void execute() {
+    // force quit to menu = '0'
+    if (key == '0') {
+      pass = true;
+    }
+    
     switch(scene) {
     case 0: 
       if (bgm.beatsPlayed - beatPass >= beatsSwitching) {
@@ -48,10 +53,10 @@ class Tutorials {
       if (scene2.pass) {
         beatPass = bgm.beatsPlayed();
         scene = 0;
-        //nextScene = 3;
-        //scene3.setStart(bgm.beatsPlayed());
-        nextScene = 0;  // = 3;
-        pass = true;  // Tutorial ended
+        nextScene = 3;
+        scene3.setStart(bgm.beatsPlayed());
+        //nextScene = 0;  // = 3;
+        //pass = true;  // Tutorial ended
         break;
       } else {
         scene2.execute();
